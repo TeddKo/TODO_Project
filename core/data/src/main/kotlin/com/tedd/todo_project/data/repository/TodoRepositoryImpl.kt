@@ -1,0 +1,51 @@
+package com.tedd.todo_project.data.repository
+
+import com.tedd.todo_project.data.model.toDomain
+import com.tedd.todo_project.data.model.toEntity
+import com.tedd.todo_project.data.security.CryptoManager
+import com.tedd.todo_project.database.TodoDatabase
+import com.tedd.todo_project.domain.model.Todo
+import com.tedd.todo_project.domain.repository.TodoRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import javax.inject.Inject
+
+class TodoRepositoryImpl @Inject constructor(
+    private val todoDatabase: TodoDatabase,
+    private val cryptoManager: CryptoManager
+) : TodoRepository {
+
+    private val todoDao = todoDatabase.todoDao()
+
+    override fun getTodos(): Flow<List<Todo>> {
+        return todoDao.getAllTodos().map { list ->
+            list.map { entity ->
+                val decryptedWork = cryptoManager.decrypt(entity.work)
+                entity.toDomain().copy(work = decryptedWork)
+            }
+        }
+    }
+
+    override suspend fun getTodoById(id: Long): Todo? {
+        val todoEntity = todoDao.getTodoById(id) ?: return null
+        val decryptedWork = cryptoManager.decrypt(todoEntity.work)
+        return todoEntity.toDomain().copy(work = decryptedWork)
+    }
+
+    override suspend fun insertTodo(todo: Todo) {
+        val encryptedWork = cryptoManager.encrypt(todo.work)
+        todoDao.insertTodo(todo.copy(work = encryptedWork).toEntity())
+    }
+
+    override suspend fun updateTodo(
+        id: Long,
+        isCompleted: Boolean,
+        completedTime: kotlinx.datetime.LocalDateTime?
+    ) {
+        todoDao.updateTodoCompletion(id, isCompleted, completedTime)
+    }
+
+    override suspend fun deleteTodo(todo: Todo) {
+        todoDao.deleteTodo(todo.toEntity())
+    }
+}
