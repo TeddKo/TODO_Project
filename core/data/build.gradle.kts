@@ -11,8 +11,5 @@ dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:database"))
 
-    implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.datetime)
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
 }

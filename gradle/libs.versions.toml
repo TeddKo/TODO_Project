@@ -93,4 +93,7 @@ todo-android-compose = { id = "todo.android.compose", version = "unspecified" }
 todo-android-hilt = { id = "todo.android.hilt", version = "unspecified" }
 todo-android-library = { id = "todo.android.library", version = "unspecified" }
 todo-android-room = { id = "todo.android.room", version = "unspecified" }
+todo-android-feature = { id = "todo.android.feature", version = "unspecified" }
 todo-kotlin-serialization = { id = "todo.kotlin.serialization", version = "unspecified" }
+todo-jvm-library = { id = "todo.jvm.library", version = "unspecified" }
+todo-jvm-hilt = { id = "todo.jvm.hilt", version = "unspecified" }
