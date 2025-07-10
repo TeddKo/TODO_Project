@@ -34,9 +34,21 @@ gradlePlugin {
             id = "todo.android.hilt"
             implementationClass = "AndroidHiltConventionPlugin"
         }
-        register("androidRoom") {
+        register("todoAndroidRoom") {
             id = "todo.android.room"
             implementationClass = "AndroidRoomConventionPlugin"
+        }
+        register("todoAndroidFeature") {
+            id = "todo.android.feature"
+            implementationClass = "AndroidFeatureConventionPlugin"
+        }
+        register("todoJvmLibrary") {
+            id = "todo.jvm.library"
+            implementationClass = "JvmLibraryConventionPlugin"
+        }
+        register("todoJvmHilt") {
+            id = "todo.jvm.hilt"
+            implementationClass = "JvmHiltConventionPlugin"
         }
         register("androidCompose") {
             id = "todo.android.compose"
