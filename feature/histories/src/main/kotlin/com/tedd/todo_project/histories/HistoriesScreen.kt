@@ -13,9 +13,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.tedd.todo_project.core.designsystem.R
 import com.tedd.todo_project.ui.components.HistoriesTopAppBar
 import com.tedd.todo_project.histories.components.HistoriesColumn
 import com.tedd.todo_project.histories.viewmodel.HistoriesScreenEvent
@@ -43,7 +45,7 @@ fun HistoriesScreen(
                         .align(Alignment.Center)
                         .padding(16.dp),
                     style = MaterialTheme.typography.bodyLarge,
-                    text = "History가 없습니다."
+                    text = stringResource(R.string.empty_histories)
                 )
             }
         } else {
