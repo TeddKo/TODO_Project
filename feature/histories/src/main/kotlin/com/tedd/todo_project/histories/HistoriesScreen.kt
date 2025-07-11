@@ -35,7 +35,7 @@ fun HistoriesScreen(
 
     Column(modifier = Modifier.fillMaxSize()) {
         HistoriesTopAppBar(
-            title = "History",
+            title = stringResource(R.string.history),
             onNavigationClick = { viewModel.onEvent(HistoriesScreenEvent.OnNavigateBack) }
         )
 

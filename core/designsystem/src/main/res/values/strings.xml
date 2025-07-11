@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">TODO_Project</string>
     <string name="todo">TODO</string>
+    <string name="history">History</string>
     <string name="empty_todos">TODO List가 없습니다.</string>
     <string name="empty_histories">History가 없습니다.</string>
     <string name="input_work">할 일을 입력하세요</string>
