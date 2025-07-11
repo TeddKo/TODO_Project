@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tedd.todo_project.domain.model.Todo
 import com.tedd.todo_project.domain.usecase.DeleteTodoUseCase
+import com.tedd.todo_project.domain.usecase.DeleteTodosUseCase
 import com.tedd.todo_project.domain.usecase.GetTodosUseCase
 import com.tedd.todo_project.domain.usecase.InsertTodoUseCase
 import com.tedd.todo_project.domain.usecase.UpdateTodoUseCase
@@ -29,6 +30,7 @@ import kotlin.time.ExperimentalTime
 class MainViewModel @Inject constructor(
     private val getTodosUseCase: GetTodosUseCase,
     private val deleteTodoUseCase: DeleteTodoUseCase,
+    private val deleteTodosUseCase: DeleteTodosUseCase,
     private val updateTodoUseCase: UpdateTodoUseCase,
     private val insertTodoUseCase: InsertTodoUseCase,
     private val updateTodosUseCase: UpdateTodosUseCase,
@@ -135,11 +137,14 @@ class MainViewModel @Inject constructor(
 
     private fun deleteSelectedTodos() {
         viewModelScope.launch {
-            _uiState.value.selectedTodoIds.forEach { todoId ->
-                _uiState.value.todos.find { it.id == todoId }?.let { todo ->
-                    deleteTodoUseCase(todo)
-                }
+            val todosToDelete = _uiState.value.selectedTodoIds.mapNotNull { todoId ->
+                _uiState.value.todos.find { it.id == todoId }
             }
+
+            if (todosToDelete.isNotEmpty()) {
+                deleteTodosUseCase(todosToDelete)
+            }
+
             clearSelection()
         }
     }

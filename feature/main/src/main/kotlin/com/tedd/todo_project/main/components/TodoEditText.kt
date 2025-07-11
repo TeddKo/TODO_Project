@@ -29,8 +29,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.tedd.todo_project.core.designsystem.R
 import com.tedd.todo_project.designsystem.theme.BorderColor
 import com.tedd.todo_project.designsystem.theme.PrimaryColor
 import com.tedd.todo_project.designsystem.theme.SecondaryColor
@@ -81,7 +83,7 @@ fun TodoEditText(
             ),
             shape = RoundedCornerShape(21.dp),
             singleLine = true,
-            placeholder = { Text("할 일을 입력하세요") }
+            placeholder = { Text(text = stringResource(R.string.input_work)) }
         )
 
         IconButton(

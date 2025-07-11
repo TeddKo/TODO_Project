@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -35,8 +36,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.tedd.todo_project.core.designsystem.R
 import com.tedd.todo_project.main.components.SwipeableTodoItem
 import com.tedd.todo_project.main.components.TodoEditText
 import com.tedd.todo_project.main.viewmodel.MainScreenEvent
@@ -94,8 +97,10 @@ fun MainScreen(
                             Icon(Icons.Default.Close, contentDescription = "Clear selection")
                         }
                         IconButton(onClick = { onEvent(MainScreenEvent.OnSelectAllTodos) }) {
-                            val isAllSelected = uiState.todos.isNotEmpty() && uiState.selectedTodoIds.size == uiState.todos.size
-                            val imageVector = if(isAllSelected) Icons.Default.LibraryAddCheck else Icons.Outlined.LibraryAddCheck
+                            val isAllSelected =
+                                uiState.todos.isNotEmpty() && uiState.selectedTodoIds.size == uiState.todos.size
+                            val imageVector =
+                                if (isAllSelected) Icons.Default.LibraryAddCheck else Icons.Outlined.LibraryAddCheck
                             Icon(imageVector = imageVector, contentDescription = "All Select")
                         }
                     }
@@ -108,7 +113,7 @@ fun MainScreen(
             )
         } else {
             MainTodoTopAppBar(
-                title = "DEEP.FINE TODO",
+                title = stringResource(R.string.todo),
                 onNavigationClick = {
                     onEvent(MainScreenEvent.OnNavigate)
                 }
@@ -126,16 +131,15 @@ fun MainScreen(
                         .align(Alignment.Center)
                         .padding(16.dp),
                     style = MaterialTheme.typography.bodyLarge,
-                    text = "TODO List가 없습니다."
+                    text = stringResource(R.string.empty_todos)
                 )
             }
         } else {
             LazyColumn(
                 state = lazyListState,
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                contentPadding = PaddingValues(16.dp)
             ) {
                 items(uiState.todos, key = { it.id }) { todo ->
                     ReorderableItem(

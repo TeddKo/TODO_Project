@@ -2,6 +2,7 @@ package com.tedd.todo_project.domain.repository
 
 import com.tedd.todo_project.domain.model.Todo
 import kotlinx.coroutines.flow.Flow
+import kotlinx.datetime.LocalDateTime
 
 interface TodoRepository {
 
@@ -11,9 +12,11 @@ interface TodoRepository {
 
     suspend fun insertTodo(todo: Todo)
 
-    suspend fun updateTodo(id: Long, isCompleted: Boolean, completedTime: kotlinx.datetime.LocalDateTime?)
+    suspend fun updateTodo(id: Long, isCompleted: Boolean, completedTime: LocalDateTime?)
 
     suspend fun deleteTodo(todo: Todo)
+
+    suspend fun deleteTodos(todos: List<Todo>)
 
     suspend fun updateTodos(todos: List<Todo>)
 }

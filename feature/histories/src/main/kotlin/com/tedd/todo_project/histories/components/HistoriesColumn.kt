@@ -12,8 +12,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.tedd.todo_project.core.designsystem.R
 import com.tedd.todo_project.designsystem.theme.SurfaceColor
 import com.tedd.todo_project.histories.util.toFormattedString
 import kotlinx.datetime.LocalDateTime
@@ -42,13 +44,13 @@ fun HistoriesColumn(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "등록일: ${registrationDate.toFormattedString()}",
+                text = stringResource(R.string.registration_date, registrationDate.toFormattedString()),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             completionDate?.let {
                 Text(
-                    text = "완료일: ${it.toFormattedString()}",
+                    text = stringResource(R.string.completion_date, it.toFormattedString()),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

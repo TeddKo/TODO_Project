@@ -7,7 +7,11 @@ import com.tedd.todo_project.domain.model.Todo
 import com.tedd.todo_project.domain.repository.TodoRepository
 import com.tedd.todo_project.security.CryptoManager
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.datetime.LocalDateTime
 import javax.inject.Inject
 
 class TodoRepositoryImpl @Inject constructor(
@@ -40,13 +44,17 @@ class TodoRepositoryImpl @Inject constructor(
     override suspend fun updateTodo(
         id: Long,
         isCompleted: Boolean,
-        completedTime: kotlinx.datetime.LocalDateTime?
+        completedTime: LocalDateTime?
     ) {
         todoDao.updateTodoCompletion(id, isCompleted, completedTime)
     }
 
     override suspend fun deleteTodo(todo: Todo) {
-        todoDao.deleteTodo(todo.toEntity())
+        todoDao.deleteTodo(todo = todo.toEntity())
+    }
+
+    override suspend fun deleteTodos(todos: List<Todo>) {
+        todoDao.deleteTodos(todos = todos.map { it.toEntity() })
     }
 
     override suspend fun updateTodos(todos: List<Todo>) {
