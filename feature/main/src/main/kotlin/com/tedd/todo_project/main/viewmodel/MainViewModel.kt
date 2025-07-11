@@ -73,6 +73,10 @@ class MainViewModel @Inject constructor(
                 is MainScreenEvent.DeleteSelectedTodos -> deleteSelectedTodos()
 
                 is MainScreenEvent.OnMoveTodo -> onMoveTodo(event.fromIndex, event.toIndex)
+
+                is MainScreenEvent.OnUpdateTodos -> onUpdateTodos()
+
+                is MainScreenEvent.OnSelectAllTodos -> onSelectAllTodos()
             }
         }
     }
@@ -87,7 +91,7 @@ class MainViewModel @Inject constructor(
                     isCompleted = false,
                     addedTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
                     completedTime = null,
-                    position = _uiState.value.todos.size // 새 항목은 마지막 position
+                    position = _uiState.value.todos.size
                 )
                 insertTodoUseCase(newTodo)
                 _uiState.update { it.copy(todoInput = "") }
@@ -146,15 +150,31 @@ class MainViewModel @Inject constructor(
             val movedTodo = mutableTodos.removeAt(fromIndex)
             mutableTodos.add(toIndex, movedTodo)
 
-            // position 업데이트
             val updatedTodos = mutableTodos.mapIndexed { index, todo ->
                 todo.copy(position = index)
             }
-
-            viewModelScope.launch {
-                updateTodosUseCase(updatedTodos)
-            }
             currentState.copy(todos = updatedTodos.toImmutableList())
+        }
+    }
+
+    private fun onUpdateTodos() {
+        viewModelScope.launch {
+            val currentTodos = _uiState.value.todos
+            if (currentTodos.isNotEmpty()) {
+                updateTodosUseCase(currentTodos)
+            }
+        }
+    }
+
+    private fun onSelectAllTodos() {
+        _uiState.update { currentState ->
+            val allTodoIds = currentState.todos.map { it.id }.toSet()
+            currentState.copy(selectedTodoIds = allTodoIds)
+            if (currentState.todos.isNotEmpty() && currentState.selectedTodoIds.size == allTodoIds.size) {
+                currentState.copy(selectedTodoIds = emptySet())
+            } else {
+                currentState.copy(selectedTodoIds = allTodoIds)
+            }
         }
     }
 }

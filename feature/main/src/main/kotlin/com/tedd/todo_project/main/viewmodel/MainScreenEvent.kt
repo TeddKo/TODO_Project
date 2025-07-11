@@ -14,4 +14,6 @@ sealed interface MainScreenEvent {
     data object ClearSelection : MainScreenEvent
     data object DeleteSelectedTodos : MainScreenEvent
     data class OnMoveTodo(val fromIndex: Int, val toIndex: Int) : MainScreenEvent
+    data object OnUpdateTodos: MainScreenEvent
+    data object OnSelectAllTodos: MainScreenEvent
 }
