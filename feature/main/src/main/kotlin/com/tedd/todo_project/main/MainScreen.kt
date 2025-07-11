@@ -1,6 +1,10 @@
 package com.tedd.todo_project.main
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -34,7 +38,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -147,11 +152,16 @@ fun MainScreen(
                         key = todo.id,
                         enabled = !uiState.isSelectionMode && swipingTodoId == null
                     ) { isDragging ->
-                        val elevation = if (isDragging) 16.dp else 0.dp
-                        val alpha = if (isDragging) 0.5f else 1f
+                        val elevation by animateDpAsState(
+                            targetValue = if (isDragging) 16.dp else 0.dp,
+                            animationSpec = tween(durationMillis = 300, easing = LinearEasing)
+                        )
+                        val backgroundColor by animateColorAsState(
+                            targetValue = if (isDragging) Color.LightGray else MaterialTheme.colorScheme.surface,
+                            animationSpec = tween(durationMillis = 300, easing = LinearEasing)
+                        )
                         SwipeableTodoItem(
                             modifier = Modifier
-                                .graphicsLayer(alpha = alpha)
                                 .clickable {
                                     onEvent(MainScreenEvent.OnTodoSelectionClick(todo.id))
                                 }
@@ -160,6 +170,8 @@ fun MainScreen(
                                     onDragStopped = { MainScreenEvent.OnUpdateTodos }
                                 ),
                             todo = todo,
+                            backgroundColor = backgroundColor,
+                            elevation = elevation,
                             onToggleComplete = { onEvent(MainScreenEvent.ToggleTodoComplete(it)) },
                             onDelete = { onEvent(MainScreenEvent.DeleteTodo(it)) },
                             isSelected = todo.id in uiState.selectedTodoIds,
