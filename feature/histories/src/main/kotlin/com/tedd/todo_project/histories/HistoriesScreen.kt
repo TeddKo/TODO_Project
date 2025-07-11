@@ -3,6 +3,7 @@ package com.tedd.todo_project.histories
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,11 +19,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tedd.todo_project.core.designsystem.R
-import com.tedd.todo_project.ui.components.HistoriesTopAppBar
 import com.tedd.todo_project.histories.components.HistoriesColumn
 import com.tedd.todo_project.histories.viewmodel.HistoriesScreenEvent
 import com.tedd.todo_project.histories.viewmodel.HistoriesScreenState
 import com.tedd.todo_project.histories.viewmodel.HistoriesViewModel
+import com.tedd.todo_project.ui.components.HistoriesTopAppBar
 import kotlinx.coroutines.flow.StateFlow
 
 @Composable
@@ -50,10 +51,9 @@ fun HistoriesScreen(
             }
         } else {
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                contentPadding = PaddingValues(16.dp)
             ) {
                 items(uiState.completedTodos, key = { it.id }) { todo ->
                     HistoriesColumn(
