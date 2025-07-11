@@ -10,6 +10,7 @@ android {
 dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:database"))
+    implementation(project(":core:security"))
 
     implementation(libs.kotlinx.datetime)
 }

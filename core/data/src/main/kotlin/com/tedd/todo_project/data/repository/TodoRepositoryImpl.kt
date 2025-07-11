@@ -2,7 +2,7 @@ package com.tedd.todo_project.data.repository
 
 import com.tedd.todo_project.data.model.toDomain
 import com.tedd.todo_project.data.model.toEntity
-import com.tedd.todo_project.data.security.CryptoManager
+import com.tedd.todo_project.security.CryptoManager
 import com.tedd.todo_project.database.TodoDatabase
 import com.tedd.todo_project.domain.model.Todo
 import com.tedd.todo_project.domain.repository.TodoRepository

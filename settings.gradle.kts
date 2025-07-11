@@ -29,6 +29,7 @@ include(":app",
     ":core:navigation",
     ":core:ui",
     ":core:designsystem",
+    ":core:security",
     ":feature:main",
     ":feature:histories"
 )
