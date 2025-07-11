@@ -22,7 +22,10 @@ import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,6 +33,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.tedd.todo_project.designsystem.theme.BorderColor
 import com.tedd.todo_project.designsystem.theme.PrimaryColor
 import com.tedd.todo_project.designsystem.theme.TODO_ProjectTheme
 import com.tedd.todo_project.designsystem.theme.WarningColor
@@ -42,7 +46,10 @@ fun SwipeableTodoItem(
     todo: Todo,
     onToggleComplete: (Todo) -> Unit,
     onDelete: (Todo) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isSelected: Boolean,
+    gestureEnabled: Boolean,
+    onSwipeStateChange: (Boolean) -> Unit
 ) {
     val dismissState = rememberSwipeToDismissBoxState(
         confirmValueChange = {
@@ -55,14 +62,26 @@ fun SwipeableTodoItem(
         }
     )
 
+    // Observe dismissState changes to notify parent about swipe state
+    val isSwiping by remember {
+        derivedStateOf {
+            dismissState.currentValue != SwipeToDismissBoxValue.Settled || dismissState.targetValue != SwipeToDismissBoxValue.Settled
+        }
+    }
+
+    SideEffect {
+        onSwipeStateChange(isSwiping)
+    }
+
     SwipeToDismissBox(
         state = dismissState,
         enableDismissFromStartToEnd = false,
+        gesturesEnabled = gestureEnabled,
         backgroundContent = {
             val color by animateColorAsState(
                 targetValue = when (dismissState.targetValue) {
                     SwipeToDismissBoxValue.EndToStart -> WarningColor
-                    else -> Color.Transparent
+                    else -> BorderColor
                 },
                 label = "DismissColorAnimation"
             )
@@ -86,7 +105,7 @@ fun SwipeableTodoItem(
             Row(
                 modifier = modifier
                     .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.surface)
+                    .background(if (isSelected) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.surface) // 선택된 항목 배경색 변경
                     .padding(vertical = 10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -131,10 +150,14 @@ fun PreviewSwipeableTodoItem() {
                 work = "This is a sample todo item",
                 isCompleted = false,
                 addedTime = LocalDateTime(2024, 7, 10, 10, 0, 0),
-                completedTime = null
+                completedTime = null,
+                position = 0
             ),
             onToggleComplete = {},
-            onDelete = {}
+            onDelete = {},
+            isSelected = false,
+            gestureEnabled = false,
+            onSwipeStateChange = { }
         )
     }
 }

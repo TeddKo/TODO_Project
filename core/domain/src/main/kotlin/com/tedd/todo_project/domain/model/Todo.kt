@@ -7,5 +7,6 @@ data class Todo(
     val work: String,
     val isCompleted: Boolean,
     val addedTime: LocalDateTime,
-    val completedTime: LocalDateTime?
+    val completedTime: LocalDateTime?,
+    val position: Int = 0
 )

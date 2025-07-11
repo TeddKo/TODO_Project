@@ -8,7 +8,8 @@ fun Todo.toEntity() = TodoEntity(
     work = work,
     isCompleted = isCompleted,
     addedTime = addedTime,
-    completedTime = completedTime
+    completedTime = completedTime,
+    position = position
 )
 
 fun TodoEntity.toDomain() = Todo(
@@ -16,5 +17,6 @@ fun TodoEntity.toDomain() = Todo(
     work = work,
     isCompleted = isCompleted,
     addedTime = addedTime,
-    completedTime = completedTime
+    completedTime = completedTime,
+    position = position
 )

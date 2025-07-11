@@ -14,4 +14,6 @@ interface TodoRepository {
     suspend fun updateTodo(id: Long, isCompleted: Boolean, completedTime: kotlinx.datetime.LocalDateTime?)
 
     suspend fun deleteTodo(todo: Todo)
+
+    suspend fun updateTodos(todos: List<Todo>)
 }

@@ -7,6 +7,7 @@ import com.tedd.todo_project.domain.usecase.DeleteTodoUseCase
 import com.tedd.todo_project.domain.usecase.GetTodosUseCase
 import com.tedd.todo_project.domain.usecase.InsertTodoUseCase
 import com.tedd.todo_project.domain.usecase.UpdateTodoUseCase
+import com.tedd.todo_project.domain.usecase.UpdateTodosUseCase
 import com.tedd.todo_project.navigation.Route
 import com.tedd.todo_project.navigator.Navigator
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,6 +31,7 @@ class MainViewModel @Inject constructor(
     private val deleteTodoUseCase: DeleteTodoUseCase,
     private val updateTodoUseCase: UpdateTodoUseCase,
     private val insertTodoUseCase: InsertTodoUseCase,
+    private val updateTodosUseCase: UpdateTodosUseCase,
     private val navigator: Navigator
 ) : ViewModel() {
 
@@ -43,7 +45,7 @@ class MainViewModel @Inject constructor(
                 .collectLatest { todos ->
                     val filteredAndSortedTodos = todos
                         .filter { !it.isCompleted }
-                        .sortedByDescending { it.addedTime }
+                        .sortedBy { it.position } // position으로 정렬
                         .toImmutableList()
                     _uiState.update { it.copy(todos = filteredAndSortedTodos) }
                 }
@@ -64,6 +66,14 @@ class MainViewModel @Inject constructor(
                 is MainScreenEvent.DeleteTodo -> deleteTodo(event.todo)
 
                 is MainScreenEvent.OnNavigate -> navigator.navigate(Route.History)
+
+                is MainScreenEvent.OnTodoSelectionClick -> onTodoSelectionClick(event.todoId)
+
+                is MainScreenEvent.ClearSelection -> clearSelection()
+
+                is MainScreenEvent.DeleteSelectedTodos -> deleteSelectedTodos()
+
+                is MainScreenEvent.OnMoveTodo -> onMoveTodo(event.fromIndex, event.toIndex)
             }
         }
     }
@@ -77,7 +87,8 @@ class MainViewModel @Inject constructor(
                     work = currentInput,
                     isCompleted = false,
                     addedTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-                    completedTime = null
+                    completedTime = null,
+                    position = _uiState.value.todos.size // 새 항목은 마지막 position
                 )
                 insertTodoUseCase(newTodo)
                 _uiState.update { it.copy(todoInput = "") }
@@ -101,6 +112,50 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    private fun onTodoSelectionClick(todoId: Long) {
+        _uiState.update { currentState ->
+            val newSelectedTodoIds = if (currentState.selectedTodoIds.contains(todoId)) {
+                currentState.selectedTodoIds.minus(todoId)
+            } else {
+                currentState.selectedTodoIds.plus(todoId)
+            }
+            currentState.copy(
+                isSelectionMode = newSelectedTodoIds.isNotEmpty(),
+                selectedTodoIds = newSelectedTodoIds
+            )
+        }
+    }
 
+    private fun clearSelection() {
+        _uiState.update { it.copy(isSelectionMode = false, selectedTodoIds = emptySet()) }
+    }
+
+    private fun deleteSelectedTodos() {
+        viewModelScope.launch {
+            _uiState.value.selectedTodoIds.forEach { todoId ->
+                _uiState.value.todos.find { it.id == todoId }?.let { todo ->
+                    deleteTodoUseCase(todo)
+                }
+            }
+            clearSelection()
+        }
+    }
+
+    private fun onMoveTodo(fromIndex: Int, toIndex: Int) {
+        _uiState.update { currentState ->
+            val mutableTodos = currentState.todos.toMutableList()
+            val movedTodo = mutableTodos.removeAt(fromIndex)
+            mutableTodos.add(toIndex, movedTodo)
+
+            // position 업데이트
+            val updatedTodos = mutableTodos.mapIndexed { index, todo ->
+                todo.copy(position = index)
+            }
+
+            viewModelScope.launch {
+                updateTodosUseCase(updatedTodos)
+            }
+            currentState.copy(todos = updatedTodos.toImmutableList())
+        }
+    }
 }
-
