@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,6 +16,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.LibraryAddCheck
+import androidx.compose.material.icons.outlined.LibraryAddCheck
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -86,8 +89,15 @@ fun MainScreen(
             TopAppBar(
                 title = { Text(text = "${uiState.selectedTodoIds.size} selected") },
                 navigationIcon = {
-                    IconButton(onClick = { onEvent(MainScreenEvent.ClearSelection) }) {
-                        Icon(Icons.Default.Close, contentDescription = "Clear selection")
+                    Row {
+                        IconButton(onClick = { onEvent(MainScreenEvent.ClearSelection) }) {
+                            Icon(Icons.Default.Close, contentDescription = "Clear selection")
+                        }
+                        IconButton(onClick = { onEvent(MainScreenEvent.OnSelectAllTodos) }) {
+                            val isAllSelected = uiState.todos.isNotEmpty() && uiState.selectedTodoIds.size == uiState.todos.size
+                            val imageVector = if(isAllSelected) Icons.Default.LibraryAddCheck else Icons.Outlined.LibraryAddCheck
+                            Icon(imageVector = imageVector, contentDescription = "All Select")
+                        }
                     }
                 },
                 actions = {
@@ -141,7 +151,10 @@ fun MainScreen(
                                 .clickable {
                                     onEvent(MainScreenEvent.OnTodoSelectionClick(todo.id))
                                 }
-                                .longPressDraggableHandle(enabled = !uiState.isSelectionMode),
+                                .longPressDraggableHandle(
+                                    enabled = !uiState.isSelectionMode,
+                                    onDragStopped = { MainScreenEvent.OnUpdateTodos }
+                                ),
                             todo = todo,
                             onToggleComplete = { onEvent(MainScreenEvent.ToggleTodoComplete(it)) },
                             onDelete = { onEvent(MainScreenEvent.DeleteTodo(it)) },
