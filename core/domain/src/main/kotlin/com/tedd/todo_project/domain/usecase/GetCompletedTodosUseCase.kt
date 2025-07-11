@@ -13,7 +13,7 @@ class GetCompletedTodosUseCase @Inject constructor(
         return todoRepository.getTodos()
             .map { todos ->
                 todos.filter { it.isCompleted }
-                    .sortedWith(compareByDescending { it.completedTime })
+                    .sortedWith(compareBy { it.completedTime })
                     .reversed()
             }
     }
