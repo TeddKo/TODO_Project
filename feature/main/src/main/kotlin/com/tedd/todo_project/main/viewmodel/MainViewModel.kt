@@ -45,7 +45,6 @@ class MainViewModel @Inject constructor(
                 .collectLatest { todos ->
                     val filteredAndSortedTodos = todos
                         .filter { !it.isCompleted }
-                        .sortedBy { it.position } // position으로 정렬
                         .toImmutableList()
                     _uiState.update { it.copy(todos = filteredAndSortedTodos) }
                 }

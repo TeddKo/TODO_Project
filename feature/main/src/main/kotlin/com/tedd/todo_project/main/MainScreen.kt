@@ -22,7 +22,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -51,6 +53,8 @@ fun MainScreen(
     val uiState by uiState().collectAsStateWithLifecycle()
     val focusManager = LocalFocusManager.current
 
+    var swipingTodoId by remember { mutableStateOf<Long?>(null) }
+
     val lazyListState = rememberLazyListState()
     val state =
         rememberReorderableLazyListState(
@@ -59,7 +63,15 @@ fun MainScreen(
                 onEvent(MainScreenEvent.OnMoveTodo(from.index, to.index))
             }
         )
-    var swipingTodoId by remember { mutableStateOf<Long?>(null) }
+
+    var previousTodosSize by remember { mutableIntStateOf(uiState.todos.size) }
+
+    LaunchedEffect(uiState.todos.size) {
+        if (uiState.todos.size > previousTodosSize) {
+            lazyListState.animateScrollToItem(0)
+        }
+        previousTodosSize = uiState.todos.size
+    }
 
     BackHandler(uiState.isSelectionMode) {
         onEvent(MainScreenEvent.ClearSelection)
