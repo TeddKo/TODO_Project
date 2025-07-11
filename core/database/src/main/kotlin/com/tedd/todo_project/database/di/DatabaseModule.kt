@@ -59,6 +59,7 @@ object DatabaseModule {
             "todo-database"
         )
             .openHelperFactory(factory)
+            .fallbackToDestructiveMigration(true)
             .build()
     }
 

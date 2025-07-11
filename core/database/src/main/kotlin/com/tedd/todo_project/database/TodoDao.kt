@@ -10,11 +10,14 @@ import kotlinx.datetime.LocalDateTime
 
 @Dao
 interface TodoDao {
-    @Query("SELECT * FROM todos ORDER BY addedTime DESC")
+    @Query("SELECT * FROM todos ORDER BY position DESC")
     fun getAllTodos(): Flow<List<TodoEntity>>
 
     @Insert
     suspend fun insertTodo(todo: TodoEntity)
+
+    @Update
+    suspend fun updateTodos(todos: List<TodoEntity>)
 
     @Update
     suspend fun updateTodo(todo: TodoEntity)

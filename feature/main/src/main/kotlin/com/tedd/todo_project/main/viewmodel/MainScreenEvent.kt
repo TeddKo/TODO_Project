@@ -10,4 +10,8 @@ sealed interface MainScreenEvent {
     data class ToggleTodoComplete(val todo: Todo) : MainScreenEvent
     data class DeleteTodo(val todo: Todo) : MainScreenEvent
     data object OnNavigate: MainScreenEvent
+    data class OnTodoSelectionClick(val todoId: Long) : MainScreenEvent
+    data object ClearSelection : MainScreenEvent
+    data object DeleteSelectedTodos : MainScreenEvent
+    data class OnMoveTodo(val fromIndex: Int, val toIndex: Int) : MainScreenEvent
 }

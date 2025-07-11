@@ -8,5 +8,7 @@ import kotlinx.collections.immutable.persistentListOf
 @Immutable
 data class MainScreenState(
     val todos: ImmutableList<Todo> = persistentListOf(),
-    val todoInput: String = ""
+    val todoInput: String = "",
+    val isSelectionMode: Boolean = false,
+    val selectedTodoIds: Set<Long> = emptySet()
 )

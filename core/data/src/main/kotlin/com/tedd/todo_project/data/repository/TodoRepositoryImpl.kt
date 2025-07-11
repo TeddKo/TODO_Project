@@ -2,10 +2,10 @@ package com.tedd.todo_project.data.repository
 
 import com.tedd.todo_project.data.model.toDomain
 import com.tedd.todo_project.data.model.toEntity
-import com.tedd.todo_project.security.CryptoManager
 import com.tedd.todo_project.database.TodoDatabase
 import com.tedd.todo_project.domain.model.Todo
 import com.tedd.todo_project.domain.repository.TodoRepository
+import com.tedd.todo_project.security.CryptoManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -47,5 +47,12 @@ class TodoRepositoryImpl @Inject constructor(
 
     override suspend fun deleteTodo(todo: Todo) {
         todoDao.deleteTodo(todo.toEntity())
+    }
+
+    override suspend fun updateTodos(todos: List<Todo>) {
+        todoDao.updateTodos(todos.map {
+            val encryptedWork = cryptoManager.encrypt(it.work)
+            it.copy(work = encryptedWork).toEntity()
+        })
     }
 }
