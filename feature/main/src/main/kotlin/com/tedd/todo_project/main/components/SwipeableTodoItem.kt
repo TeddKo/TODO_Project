@@ -59,12 +59,12 @@ fun SwipeableTodoItem(
             }
             true
         },
-        positionalThreshold = { it * .25f }
+        positionalThreshold = { it * .2f }
     )
 
     val isSwiping by remember {
         derivedStateOf {
-            dismissState.currentValue != SwipeToDismissBoxValue.Settled || dismissState.targetValue != SwipeToDismissBoxValue.Settled
+            dismissState.currentValue != SwipeToDismissBoxValue.Settled || dismissState.targetValue != SwipeToDismissBoxValue.Settled || dismissState.dismissDirection != SwipeToDismissBoxValue.Settled
         }
     }
 
@@ -76,16 +76,13 @@ fun SwipeableTodoItem(
         gesturesEnabled = gestureEnabled,
         backgroundContent = {
 
-            val color by animateColorAsState(
-                targetValue = when (dismissState.targetValue) {
-                    SwipeToDismissBoxValue.StartToEnd -> MaterialTheme.colorScheme.inversePrimary
-                    SwipeToDismissBoxValue.EndToStart -> MaterialTheme.colorScheme.error
-                    SwipeToDismissBoxValue.Settled -> BorderColor
-                },
-                animationSpec = tween(durationMillis = 300, easing = LinearEasing)
-            )
+            val color = when (dismissState.dismissDirection) {
+                SwipeToDismissBoxValue.StartToEnd -> MaterialTheme.colorScheme.inversePrimary
+                SwipeToDismissBoxValue.EndToStart -> MaterialTheme.colorScheme.error
+                SwipeToDismissBoxValue.Settled -> BorderColor
+            }
 
-            val (alignment, text) = when (dismissState.targetValue) {
+            val (alignment, text) = when (dismissState.dismissDirection) {
                 SwipeToDismissBoxValue.StartToEnd -> Alignment.CenterStart to stringResource(R.string.complete)
                 SwipeToDismissBoxValue.EndToStart -> Alignment.CenterEnd to stringResource(R.string.delete)
                 SwipeToDismissBoxValue.Settled -> Alignment.CenterStart to ""
