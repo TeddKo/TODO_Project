@@ -83,6 +83,9 @@ class MainViewModel @Inject constructor(
                 is MainScreenEvent.OnUpdateTodos -> onUpdateTodos()
 
                 is MainScreenEvent.OnSelectAllTodos -> onSelectAllTodos()
+
+                is MainScreenEvent.OnSwipeStateChange -> _uiState.update { it.copy(swipingTodoId = if (event.isSwiping) event.todoId else null) }
+
             }
         }
     }
