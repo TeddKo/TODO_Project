@@ -1,6 +1,8 @@
 package com.tedd.todo_project.main.navigation
 
+import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.tedd.todo_project.histories.HistoriesScreen
@@ -9,19 +11,23 @@ import com.tedd.todo_project.main.MainScreen
 import com.tedd.todo_project.main.viewmodel.MainViewModel
 import com.tedd.todo_project.navigation.Route
 
-fun NavGraphBuilder.mainNavGraph(mainViewModel: MainViewModel) {
+fun NavGraphBuilder.mainNavGraph() {
 
     composable<Route.Main> {
+        val viewModel: MainViewModel = hiltViewModel()
+        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
         MainScreen(
-            uiState = { mainViewModel.uiState },
-            onEvent = mainViewModel::onEvent
+            uiState = uiState,
+            onEvent = viewModel::onEvent
         )
     }
 
     composable<Route.History> {
-        val historiesViewModel: HistoriesViewModel = hiltViewModel()
+        val viewModel: HistoriesViewModel = hiltViewModel()
+        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
         HistoriesScreen(
-            uiState = { historiesViewModel.uiState }
+            uiState = uiState,
+            onEvent = viewModel::onEvent
         )
     }
 }
