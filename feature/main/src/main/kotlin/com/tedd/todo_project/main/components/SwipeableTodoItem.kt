@@ -73,24 +73,20 @@ fun SwipeableTodoItem(
         state = dismissState,
         gesturesEnabled = gestureEnabled,
         backgroundContent = {
-            val (text, alignment, color) = when (dismissState.targetValue) {
-                SwipeToDismissBoxValue.StartToEnd -> Triple(
-                    stringResource(R.string.complete),
-                    Alignment.CenterStart,
-                    MaterialTheme.colorScheme.inversePrimary
-                )
 
-                SwipeToDismissBoxValue.EndToStart -> Triple(
-                    stringResource(R.string.delete),
-                    Alignment.CenterEnd,
-                    MaterialTheme.colorScheme.error
-                )
+            val color by animateColorAsState(
+                targetValue = when (dismissState.targetValue) {
+                    SwipeToDismissBoxValue.StartToEnd -> MaterialTheme.colorScheme.inversePrimary
+                    SwipeToDismissBoxValue.EndToStart -> MaterialTheme.colorScheme.error
+                    SwipeToDismissBoxValue.Settled -> BorderColor
+                },
+                animationSpec = tween(durationMillis = 300, easing = LinearEasing)
+            )
 
-                SwipeToDismissBoxValue.Settled -> Triple(
-                    "",
-                    Alignment.CenterStart,
-                    BorderColor
-                )
+            val (alignment, text) = when (dismissState.targetValue) {
+                SwipeToDismissBoxValue.StartToEnd -> Alignment.CenterStart to stringResource(R.string.complete)
+                SwipeToDismissBoxValue.EndToStart -> Alignment.CenterEnd to stringResource(R.string.delete)
+                SwipeToDismissBoxValue.Settled -> Alignment.CenterStart to ""
             }
             Box(
                 modifier = Modifier
