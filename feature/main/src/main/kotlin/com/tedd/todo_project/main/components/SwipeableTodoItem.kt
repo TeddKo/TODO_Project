@@ -2,7 +2,6 @@ package com.tedd.todo_project.main.components
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -59,7 +58,7 @@ fun SwipeableTodoItem(
             }
             true
         },
-        positionalThreshold = { it * .2f }
+        positionalThreshold = { it * .5f }
     )
 
     val isSwiping by remember {
@@ -103,19 +102,9 @@ fun SwipeableTodoItem(
             }
         },
         content = {
-            val alpha by animateFloatAsState(
-                targetValue = when (dismissState.targetValue) {
-                    SwipeToDismissBoxValue.StartToEnd,
-                    SwipeToDismissBoxValue.EndToStart -> 0f
-
-                    SwipeToDismissBoxValue.Settled -> 1f
-                },
-                animationSpec = tween(durationMillis = 300, easing = LinearEasing)
-            )
-
             val backgroundColor by animateColorAsState(
                 targetValue = if (isSelected) MaterialTheme.colorScheme.secondary
-                else backgroundColor.copy(alpha = alpha),
+                else backgroundColor,
                 animationSpec = tween(durationMillis = 300, easing = LinearEasing)
             )
 
@@ -129,7 +118,6 @@ fun SwipeableTodoItem(
                 Text(
                     text = todo.work,
                     style = MaterialTheme.typography.bodyLarge,
-                    color = Color.Black.copy(alpha = alpha),
                     maxLines = Int.MAX_VALUE,
                     overflow = TextOverflow.Visible
                 )
