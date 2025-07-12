@@ -18,14 +18,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.tedd.todo_project.core.designsystem.R
 import com.tedd.todo_project.histories.components.HistoriesColumn
-import com.tedd.todo_project.histories.viewmodel.HistoriesScreenEvent
+import com.tedd.todo_project.histories.viewmodel.HistoriesScreenIntent
 import com.tedd.todo_project.histories.viewmodel.HistoriesScreenState
 import com.tedd.todo_project.ui.components.HistoriesTopAppBar
 
 @Composable
 fun HistoriesScreen(
     uiState: HistoriesScreenState,
-    onEvent: (HistoriesScreenEvent) -> Unit
+    onIntent: (HistoriesScreenIntent) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -34,7 +34,7 @@ fun HistoriesScreen(
     ) {
         HistoriesTopAppBar(
             title = stringResource(R.string.history),
-            onNavigationClick = { onEvent(HistoriesScreenEvent.OnNavigateBack) }
+            onNavigationClick = { onIntent(HistoriesScreenIntent.OnNavigateBack) }
         )
 
         if (uiState.completedTodos.isEmpty()) {

@@ -45,7 +45,7 @@ import androidx.compose.ui.unit.dp
 import com.tedd.todo_project.core.designsystem.R
 import com.tedd.todo_project.main.components.SwipeableTodoItem
 import com.tedd.todo_project.main.components.TodoEditText
-import com.tedd.todo_project.main.viewmodel.MainScreenEvent
+import com.tedd.todo_project.main.viewmodel.MainScreenIntent
 import com.tedd.todo_project.main.viewmodel.MainScreenState
 import com.tedd.todo_project.ui.components.MainTodoTopAppBar
 import com.tedd.todo_project.ui.extensions.addFocusCleaner
@@ -56,7 +56,7 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 @Composable
 fun MainScreen(
     uiState: MainScreenState,
-    onEvent: (MainScreenEvent) -> Unit
+    onIntent: (MainScreenIntent) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -65,7 +65,7 @@ fun MainScreen(
         rememberReorderableLazyListState(
             lazyListState = lazyListState,
             onMove = { from, to ->
-                onEvent(MainScreenEvent.OnMoveTodo(from.index, to.index))
+                onIntent(MainScreenIntent.OnMoveTodo(from.index, to.index))
             }
         )
 
@@ -79,7 +79,7 @@ fun MainScreen(
     }
 
     BackHandler(uiState.isSelectionMode) {
-        onEvent(MainScreenEvent.ClearSelection)
+        onIntent(MainScreenIntent.ClearSelection)
     }
 
     if (uiState.isLoading) {
@@ -100,10 +100,10 @@ fun MainScreen(
                     title = { Text(text = "${uiState.selectedTodoIds.size} selected") },
                     navigationIcon = {
                         Row {
-                            IconButton(onClick = { onEvent(MainScreenEvent.ClearSelection) }) {
+                            IconButton(onClick = { onIntent(MainScreenIntent.ClearSelection) }) {
                                 Icon(Icons.Default.Close, contentDescription = "Clear selection")
                             }
-                            IconButton(onClick = { onEvent(MainScreenEvent.OnSelectAllTodos) }) {
+                            IconButton(onClick = { onIntent(MainScreenIntent.OnSelectAllTodos) }) {
                                 val isAllSelected =
                                     uiState.todos.isNotEmpty() && uiState.selectedTodoIds.size == uiState.todos.size
                                 val imageVector =
@@ -113,7 +113,7 @@ fun MainScreen(
                         }
                     },
                     actions = {
-                        IconButton(onClick = { onEvent(MainScreenEvent.DeleteSelectedTodos) }) {
+                        IconButton(onClick = { onIntent(MainScreenIntent.DeleteSelectedTodos) }) {
                             Icon(Icons.Default.Delete, contentDescription = "Delete selected")
                         }
                     }
@@ -122,7 +122,7 @@ fun MainScreen(
                 MainTodoTopAppBar(
                     title = stringResource(R.string.todo),
                     onNavigationClick = {
-                        onEvent(MainScreenEvent.OnNavigate)
+                        onIntent(MainScreenIntent.OnNavigate)
                     }
                 )
             }
@@ -165,22 +165,22 @@ fun MainScreen(
                             SwipeableTodoItem(
                                 modifier = Modifier
                                     .clickable {
-                                        onEvent(MainScreenEvent.OnTodoSelectionClick(todo.id))
+                                        onIntent(MainScreenIntent.OnTodoSelectionClick(todo.id))
                                     }
                                     .longPressDraggableHandle(
                                         enabled = !uiState.isSelectionMode,
-                                        onDragStopped = { onEvent(MainScreenEvent.OnUpdateTodos) }
+                                        onDragStopped = { onIntent(MainScreenIntent.OnUpdateTodos) }
                                     ),
                                 todo = todo,
                                 backgroundColor = backgroundColor,
                                 elevation = elevation,
-                                onToggleComplete = { onEvent(MainScreenEvent.ToggleTodoComplete(it)) },
-                                onDelete = { onEvent(MainScreenEvent.DeleteTodo(it)) },
+                                onToggleComplete = { onIntent(MainScreenIntent.ToggleTodoComplete(it)) },
+                                onDelete = { onIntent(MainScreenIntent.DeleteTodo(it)) },
                                 isSelected = todo.id in uiState.selectedTodoIds,
                                 gestureEnabled = !uiState.isSelectionMode && !isDragging,
                                 onSwipeStateChange = { isSwiping ->
-                                    onEvent(
-                                        MainScreenEvent.OnSwipeStateChange(
+                                    onIntent(
+                                        MainScreenIntent.OnSwipeStateChange(
                                             todoId = todo.id,
                                             isSwiping = isSwiping
                                         )
@@ -195,8 +195,8 @@ fun MainScreen(
             TodoEditText(
                 modifier = Modifier.fillMaxWidth(),
                 text = uiState.todoInput,
-                onTextChange = { onEvent(MainScreenEvent.UpdateTodoInput(it)) },
-                onAddTodo = { onEvent(MainScreenEvent.AddTodo) }
+                onTextChange = { onIntent(MainScreenIntent.UpdateTodoInput(it)) },
+                onAddTodo = { onIntent(MainScreenIntent.AddTodo) }
             )
         }
     }

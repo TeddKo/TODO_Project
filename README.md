@@ -49,7 +49,7 @@ This project adopts a multi-module approach to separate features and responsibil
     -   The Presentation Layer is implemented using the MVI pattern.
     -   **Model**: The `ViewModel` manages a single, immutable state object (e.g., `MainScreenState`) exposed via a `StateFlow`.
     -   **View**: The Composable UI observes the `StateFlow` and renders the screen accordingly.
-    -   **Intent**: User actions are modeled as explicit `Intent`s (e.g., `MainScreenEvent`), which are processed by the `ViewModel` to produce a new state. This creates a predictable, unidirectional data flow.
+    -   **Intent**: User actions are modeled as explicit `Intent`s (e.g., `MainScreenIntent`), which are processed by the `ViewModel` to produce a new state. This creates a predictable, unidirectional data flow.
 -   **Key Technologies**
     -   **UI**: 100% Jetpack Compose
     -   **DI (Dependency Injection)**: Hilt
