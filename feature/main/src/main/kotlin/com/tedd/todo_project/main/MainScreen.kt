@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.LibraryAddCheck
 import androidx.compose.material.icons.outlined.LibraryAddCheck
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -38,7 +39,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -88,106 +88,116 @@ fun MainScreen(
         onEvent(MainScreenEvent.ClearSelection)
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .addFocusCleaner(focusManager)
-    ) {
-        if (uiState.isSelectionMode) {
-            TopAppBar(
-                title = { Text(text = "${uiState.selectedTodoIds.size} selected") },
-                navigationIcon = {
-                    Row {
-                        IconButton(onClick = { onEvent(MainScreenEvent.ClearSelection) }) {
-                            Icon(Icons.Default.Close, contentDescription = "Clear selection")
-                        }
-                        IconButton(onClick = { onEvent(MainScreenEvent.OnSelectAllTodos) }) {
-                            val isAllSelected =
-                                uiState.todos.isNotEmpty() && uiState.selectedTodoIds.size == uiState.todos.size
-                            val imageVector =
-                                if (isAllSelected) Icons.Default.LibraryAddCheck else Icons.Outlined.LibraryAddCheck
-                            Icon(imageVector = imageVector, contentDescription = "All Select")
-                        }
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { onEvent(MainScreenEvent.DeleteSelectedTodos) }) {
-                        Icon(Icons.Default.Delete, contentDescription = "Delete selected")
-                    }
-                }
-            )
-        } else {
-            MainTodoTopAppBar(
-                title = stringResource(R.string.todo),
-                onNavigationClick = {
-                    onEvent(MainScreenEvent.OnNavigate)
-                }
+    if (uiState.isLoading) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            CircularProgressIndicator(
+                modifier = Modifier.align(alignment = Alignment.Center),
+                color = MaterialTheme.colorScheme.secondary
             )
         }
-
-        if (uiState.todos.isEmpty()) {
-            Box(
-                Modifier
-                    .weight(1f)
-                    .fillMaxSize()
-            ) {
-                Text(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .padding(16.dp),
-                    style = MaterialTheme.typography.bodyLarge,
-                    text = stringResource(R.string.empty_todos)
+    } else {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .addFocusCleaner(focusManager)
+        ) {
+            if (uiState.isSelectionMode) {
+                TopAppBar(
+                    title = { Text(text = "${uiState.selectedTodoIds.size} selected") },
+                    navigationIcon = {
+                        Row {
+                            IconButton(onClick = { onEvent(MainScreenEvent.ClearSelection) }) {
+                                Icon(Icons.Default.Close, contentDescription = "Clear selection")
+                            }
+                            IconButton(onClick = { onEvent(MainScreenEvent.OnSelectAllTodos) }) {
+                                val isAllSelected =
+                                    uiState.todos.isNotEmpty() && uiState.selectedTodoIds.size == uiState.todos.size
+                                val imageVector =
+                                    if (isAllSelected) Icons.Default.LibraryAddCheck else Icons.Outlined.LibraryAddCheck
+                                Icon(imageVector = imageVector, contentDescription = "All Select")
+                            }
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = { onEvent(MainScreenEvent.DeleteSelectedTodos) }) {
+                            Icon(Icons.Default.Delete, contentDescription = "Delete selected")
+                        }
+                    }
+                )
+            } else {
+                MainTodoTopAppBar(
+                    title = stringResource(R.string.todo),
+                    onNavigationClick = {
+                        onEvent(MainScreenEvent.OnNavigate)
+                    }
                 )
             }
-        } else {
-            LazyColumn(
-                state = lazyListState,
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-                contentPadding = PaddingValues(16.dp)
-            ) {
-                items(uiState.todos, key = { it.id }) { todo ->
-                    ReorderableItem(
-                        state = state,
-                        key = todo.id,
-                        enabled = !uiState.isSelectionMode && swipingTodoId == null
-                    ) { isDragging ->
-                        val elevation by animateDpAsState(
-                            targetValue = if (isDragging) 16.dp else 0.dp,
-                            animationSpec = tween(durationMillis = 300, easing = LinearEasing)
-                        )
-                        val backgroundColor by animateColorAsState(
-                            targetValue = if (isDragging) Color.LightGray else MaterialTheme.colorScheme.surface,
-                            animationSpec = tween(durationMillis = 300, easing = LinearEasing)
-                        )
-                        SwipeableTodoItem(
-                            modifier = Modifier
-                                .clickable {
-                                    onEvent(MainScreenEvent.OnTodoSelectionClick(todo.id))
-                                }
-                                .longPressDraggableHandle(
-                                    enabled = !uiState.isSelectionMode,
-                                    onDragStopped = { MainScreenEvent.OnUpdateTodos }
-                                ),
-                            todo = todo,
-                            backgroundColor = backgroundColor,
-                            elevation = elevation,
-                            onToggleComplete = { onEvent(MainScreenEvent.ToggleTodoComplete(it)) },
-                            onDelete = { onEvent(MainScreenEvent.DeleteTodo(it)) },
-                            isSelected = todo.id in uiState.selectedTodoIds,
-                            gestureEnabled = !uiState.isSelectionMode && !isDragging,
-                            onSwipeStateChange = { swipingTodoId = if (it) todo.id else null }
-                        )
+
+            if (uiState.todos.isEmpty()) {
+                Box(
+                    Modifier
+                        .weight(1f)
+                        .fillMaxSize()
+                ) {
+                    Text(
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(16.dp),
+                        style = MaterialTheme.typography.bodyLarge,
+                        text = stringResource(R.string.empty_todos)
+                    )
+                }
+            } else {
+                LazyColumn(
+                    state = lazyListState,
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    contentPadding = PaddingValues(16.dp)
+                ) {
+                    items(uiState.todos, key = { it.id }) { todo ->
+                        ReorderableItem(
+                            state = state,
+                            key = todo.id,
+                            enabled = !uiState.isSelectionMode && swipingTodoId == null
+                        ) { isDragging ->
+                            val elevation by animateDpAsState(
+                                targetValue = if (isDragging) 16.dp else 0.dp,
+                                animationSpec = tween(durationMillis = 300, easing = LinearEasing)
+                            )
+                            val backgroundColor by animateColorAsState(
+                                targetValue = if (isDragging) Color.LightGray else MaterialTheme.colorScheme.surface,
+                                animationSpec = tween(durationMillis = 300, easing = LinearEasing)
+                            )
+                            SwipeableTodoItem(
+                                modifier = Modifier
+                                    .clickable {
+                                        onEvent(MainScreenEvent.OnTodoSelectionClick(todo.id))
+                                    }
+                                    .longPressDraggableHandle(
+                                        enabled = !uiState.isSelectionMode,
+                                        onDragStopped = { onEvent(MainScreenEvent.OnUpdateTodos) }
+                                    ),
+                                todo = todo,
+                                backgroundColor = backgroundColor,
+                                elevation = elevation,
+                                onToggleComplete = { onEvent(MainScreenEvent.ToggleTodoComplete(it)) },
+                                onDelete = { onEvent(MainScreenEvent.DeleteTodo(it)) },
+                                isSelected = todo.id in uiState.selectedTodoIds,
+                                gestureEnabled = !uiState.isSelectionMode && !isDragging,
+                                onSwipeStateChange = { swipingTodoId = if (it) todo.id else null }
+                            )
+                        }
                     }
                 }
             }
-        }
 
-        TodoEditText(
-            modifier = Modifier.fillMaxWidth(),
-            text = uiState.todoInput,
-            onTextChange = { onEvent(MainScreenEvent.UpdateTodoInput(it)) },
-            onAddTodo = { onEvent(MainScreenEvent.AddTodo) }
-        )
+            TodoEditText(
+                modifier = Modifier.fillMaxWidth(),
+                text = uiState.todoInput,
+                onTextChange = { onEvent(MainScreenEvent.UpdateTodoInput(it)) },
+                onAddTodo = { onEvent(MainScreenEvent.AddTodo) }
+            )
+        }
     }
+
 }

@@ -16,8 +16,10 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
@@ -43,12 +45,14 @@ class MainViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             getTodosUseCase()
+                .onStart { _uiState.update { it.copy(isLoading = true) } }
                 .distinctUntilChanged()
+                .catch { _uiState.update { it.copy(isLoading = false) } }
                 .collectLatest { todos ->
                     val filteredAndSortedTodos = todos
                         .filter { !it.isCompleted }
                         .toImmutableList()
-                    _uiState.update { it.copy(todos = filteredAndSortedTodos) }
+                    _uiState.update { it.copy(todos = filteredAndSortedTodos, isLoading = false) }
                 }
         }
     }
@@ -154,11 +158,7 @@ class MainViewModel @Inject constructor(
             val mutableTodos = currentState.todos.toMutableList()
             val movedTodo = mutableTodos.removeAt(fromIndex)
             mutableTodos.add(toIndex, movedTodo)
-
-            val updatedTodos = mutableTodos.mapIndexed { index, todo ->
-                todo.copy(position = index)
-            }
-            currentState.copy(todos = updatedTodos.toImmutableList())
+            currentState.copy(todos = mutableTodos.toImmutableList())
         }
     }
 
@@ -166,7 +166,11 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             val currentTodos = _uiState.value.todos
             if (currentTodos.isNotEmpty()) {
-                updateTodosUseCase(currentTodos)
+                val size = currentTodos.size
+                val updateTodos = currentTodos.mapIndexed { index, todo ->
+                    todo.copy(position = size - 1 - index)
+                }
+                updateTodosUseCase(updateTodos)
             }
         }
     }

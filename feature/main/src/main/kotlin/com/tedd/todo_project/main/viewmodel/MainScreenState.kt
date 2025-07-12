@@ -10,5 +10,6 @@ data class MainScreenState(
     val todos: ImmutableList<Todo> = persistentListOf(),
     val todoInput: String = "",
     val isSelectionMode: Boolean = false,
-    val selectedTodoIds: Set<Long> = emptySet()
+    val selectedTodoIds: Set<Long> = emptySet(),
+    val isLoading: Boolean = false
 )
