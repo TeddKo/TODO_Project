@@ -34,10 +34,10 @@ class HistoriesViewModel @Inject constructor(
         }
     }
 
-    fun onEvent(event: HistoriesScreenEvent) {
+    fun onIntent(intent: HistoriesScreenIntent) {
         viewModelScope.launch {
-            when (event) {
-                is HistoriesScreenEvent.OnNavigateBack -> navigator.navigateBack()
+            when (intent) {
+                is HistoriesScreenIntent.OnNavigateBack -> navigator.navigateBack()
             }
         }
     }

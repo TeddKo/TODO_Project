@@ -18,7 +18,7 @@ fun NavGraphBuilder.mainNavGraph() {
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
         MainScreen(
             uiState = uiState,
-            onEvent = viewModel::onEvent
+            onIntent = viewModel::onIntent
         )
     }
 
@@ -27,7 +27,7 @@ fun NavGraphBuilder.mainNavGraph() {
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
         HistoriesScreen(
             uiState = uiState,
-            onEvent = viewModel::onEvent
+            onIntent = viewModel::onIntent
         )
     }
 }

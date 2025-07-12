@@ -57,34 +57,34 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun onEvent(event: MainScreenEvent) {
+    fun onIntent(intent: MainScreenIntent) {
         viewModelScope.launch {
-            when (event) {
-                is MainScreenEvent.UpdateTodoInput -> {
-                    _uiState.update { it.copy(todoInput = event.newInput) }
+            when (intent) {
+                is MainScreenIntent.UpdateTodoInput -> {
+                    _uiState.update { it.copy(todoInput = intent.newInput) }
                 }
 
-                is MainScreenEvent.AddTodo -> addTodo()
+                is MainScreenIntent.AddTodo -> addTodo()
 
-                is MainScreenEvent.ToggleTodoComplete -> toggleTodoComplete(event.todo)
+                is MainScreenIntent.ToggleTodoComplete -> toggleTodoComplete(intent.todo)
 
-                is MainScreenEvent.DeleteTodo -> deleteTodo(event.todo)
+                is MainScreenIntent.DeleteTodo -> deleteTodo(intent.todo)
 
-                is MainScreenEvent.OnNavigate -> navigator.navigate(Route.History)
+                is MainScreenIntent.OnNavigate -> navigator.navigate(Route.History)
 
-                is MainScreenEvent.OnTodoSelectionClick -> onTodoSelectionClick(event.todoId)
+                is MainScreenIntent.OnTodoSelectionClick -> onTodoSelectionClick(intent.todoId)
 
-                is MainScreenEvent.ClearSelection -> clearSelection()
+                is MainScreenIntent.ClearSelection -> clearSelection()
 
-                is MainScreenEvent.DeleteSelectedTodos -> deleteSelectedTodos()
+                is MainScreenIntent.DeleteSelectedTodos -> deleteSelectedTodos()
 
-                is MainScreenEvent.OnMoveTodo -> onMoveTodo(event.fromIndex, event.toIndex)
+                is MainScreenIntent.OnMoveTodo -> onMoveTodo(intent.fromIndex, intent.toIndex)
 
-                is MainScreenEvent.OnUpdateTodos -> onUpdateTodos()
+                is MainScreenIntent.OnUpdateTodos -> onUpdateTodos()
 
-                is MainScreenEvent.OnSelectAllTodos -> onSelectAllTodos()
+                is MainScreenIntent.OnSelectAllTodos -> onSelectAllTodos()
 
-                is MainScreenEvent.OnSwipeStateChange -> _uiState.update { it.copy(swipingTodoId = if (event.isSwiping) event.todoId else null) }
+                is MainScreenIntent.OnSwipeStateChange -> _uiState.update { it.copy(swipingTodoId = if (intent.isSwiping) intent.todoId else null) }
 
             }
         }
