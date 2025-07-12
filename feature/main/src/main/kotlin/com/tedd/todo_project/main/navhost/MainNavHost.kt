@@ -9,14 +9,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.tedd.todo_project.designsystem.theme.BackgroundColor
 import com.tedd.todo_project.main.navigation.mainNavGraph
-import com.tedd.todo_project.main.viewmodel.MainViewModel
 import com.tedd.todo_project.navigation.Route
 
 @Composable
 internal fun MainNavHost(
     modifier: Modifier = Modifier,
-    navController: NavHostController,
-    viewModel: MainViewModel
+    navController: NavHostController
 ) {
     Box(
         modifier = modifier
@@ -27,7 +25,7 @@ internal fun MainNavHost(
             navController = navController,
             startDestination = Route.Main,
         ) {
-            mainNavGraph(mainViewModel = viewModel)
+            mainNavGraph()
         }
     }
 }

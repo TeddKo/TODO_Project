@@ -43,7 +43,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tedd.todo_project.core.designsystem.R
 import com.tedd.todo_project.main.components.SwipeableTodoItem
 import com.tedd.todo_project.main.components.TodoEditText
@@ -51,17 +50,15 @@ import com.tedd.todo_project.main.viewmodel.MainScreenEvent
 import com.tedd.todo_project.main.viewmodel.MainScreenState
 import com.tedd.todo_project.ui.components.MainTodoTopAppBar
 import com.tedd.todo_project.ui.extensions.addFocusCleaner
-import kotlinx.coroutines.flow.StateFlow
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun MainScreen(
-    uiState: () -> StateFlow<MainScreenState>,
+    uiState: MainScreenState,
     onEvent: (MainScreenEvent) -> Unit
 ) {
-    val uiState by uiState().collectAsStateWithLifecycle()
     val focusManager = LocalFocusManager.current
 
     var swipingTodoId by remember { mutableStateOf<Long?>(null) }
