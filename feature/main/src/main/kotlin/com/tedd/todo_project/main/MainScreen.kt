@@ -34,7 +34,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -60,8 +59,6 @@ fun MainScreen(
     onEvent: (MainScreenEvent) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
-
-    var swipingTodoId by remember { mutableStateOf<Long?>(null) }
 
     val lazyListState = rememberLazyListState()
     val state =
@@ -155,7 +152,7 @@ fun MainScreen(
                         ReorderableItem(
                             state = state,
                             key = todo.id,
-                            enabled = !uiState.isSelectionMode && swipingTodoId == null
+                            enabled = !uiState.isSelectionMode && uiState.swipingTodoId == null
                         ) { isDragging ->
                             val elevation by animateDpAsState(
                                 targetValue = if (isDragging) 16.dp else 0.dp,
@@ -181,7 +178,14 @@ fun MainScreen(
                                 onDelete = { onEvent(MainScreenEvent.DeleteTodo(it)) },
                                 isSelected = todo.id in uiState.selectedTodoIds,
                                 gestureEnabled = !uiState.isSelectionMode && !isDragging,
-                                onSwipeStateChange = { swipingTodoId = if (it) todo.id else null }
+                                onSwipeStateChange = { isSwiping ->
+                                    onEvent(
+                                        MainScreenEvent.OnSwipeStateChange(
+                                            todoId = todo.id,
+                                            isSwiping = isSwiping
+                                        )
+                                    )
+                                }
                             )
                         }
                     }

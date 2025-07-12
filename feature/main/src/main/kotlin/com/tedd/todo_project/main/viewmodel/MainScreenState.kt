@@ -11,5 +11,6 @@ data class MainScreenState(
     val todoInput: String = "",
     val isSelectionMode: Boolean = false,
     val selectedTodoIds: Set<Long> = emptySet(),
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val swipingTodoId: Long? = null
 )

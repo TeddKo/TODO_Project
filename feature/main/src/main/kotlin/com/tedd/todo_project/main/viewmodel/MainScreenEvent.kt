@@ -16,4 +16,5 @@ sealed interface MainScreenEvent {
     data class OnMoveTodo(val fromIndex: Int, val toIndex: Int) : MainScreenEvent
     data object OnUpdateTodos: MainScreenEvent
     data object OnSelectAllTodos: MainScreenEvent
+    data class OnSwipeStateChange(val todoId: Long, val isSwiping: Boolean) : MainScreenEvent
 }
