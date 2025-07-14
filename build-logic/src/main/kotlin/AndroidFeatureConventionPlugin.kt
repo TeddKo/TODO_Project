@@ -1,4 +1,3 @@
-
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
@@ -23,6 +22,8 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
 
                 add("implementation", findLibrary("kotlinx.collections.immutable"))
                 add("implementation", findLibrary("kotlinx.datetime"))
+
+                add("implementation", findLibrary("reorderable"))
             }
         }
     }
