@@ -1,17 +1,23 @@
 package com.tedd.todo_project.ui.components
 
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.LibraryAddCheck
+import androidx.compose.material.icons.outlined.LibraryAddCheck
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -49,6 +55,37 @@ fun TodoTopAppBar(
             navigationIconContentColor = Color.Unspecified,
             actionIconContentColor = Color.Unspecified
         )
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SelectionDeleteTopAppBar(
+    title: String,
+    isAllSelected: Boolean,
+    onClearSelection: () -> Unit,
+    onSelectAll: () -> Unit,
+    onDeleteSelected: () -> Unit
+) {
+    TopAppBar(
+        title = { Text(text = title) },
+        navigationIcon = {
+            Row {
+                IconButton(onClick = onClearSelection) {
+                    Icon(Icons.Default.Close, contentDescription = "Clear selection")
+                }
+                IconButton(onClick = onSelectAll) {
+                    val imageVector =
+                        if (isAllSelected) Icons.Default.LibraryAddCheck else Icons.Outlined.LibraryAddCheck
+                    Icon(imageVector = imageVector, contentDescription = "All Select")
+                }
+            }
+        },
+        actions = {
+            IconButton(onClick = onDeleteSelected) {
+                Icon(Icons.Default.Delete, contentDescription = "Delete selected")
+            }
+        }
     )
 }
 

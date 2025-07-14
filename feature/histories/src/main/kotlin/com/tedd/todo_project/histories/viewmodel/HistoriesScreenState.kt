@@ -7,5 +7,9 @@ import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 data class HistoriesScreenState(
-    val completedTodos: ImmutableList<Todo> = persistentListOf()
+    val histories: ImmutableList<Todo> = persistentListOf(),
+    val isSelectionMode: Boolean = false,
+    val selectedHistoriesIds: Set<Long> = emptySet(),
+    val isLoading: Boolean = false,
+    val swipingHistoryId: Long? = null
 )

@@ -5,14 +5,14 @@ import com.tedd.todo_project.domain.model.Todo
 
 @Stable
 sealed interface MainScreenIntent {
-    data class UpdateTodoInput(val newInput: String) : MainScreenIntent
-    data object AddTodo : MainScreenIntent
-    data class ToggleTodoComplete(val todo: Todo) : MainScreenIntent
-    data class DeleteTodo(val todo: Todo) : MainScreenIntent
+    data class OnUpdateTodoInput(val newInput: String) : MainScreenIntent
+    data object OnAddTodo : MainScreenIntent
+    data class OnToggleTodoComplete(val todo: Todo) : MainScreenIntent
+    data class OnDeleteTodo(val todo: Todo) : MainScreenIntent
     data object OnNavigate: MainScreenIntent
-    data class OnTodoSelectionClick(val todoId: Long) : MainScreenIntent
-    data object ClearSelection : MainScreenIntent
-    data object DeleteSelectedTodos : MainScreenIntent
+    data class OnSelectTodo(val todoId: Long) : MainScreenIntent
+    data object OnClearSelection : MainScreenIntent
+    data object OnDeleteSelectedTodos : MainScreenIntent
     data class OnMoveTodo(val fromIndex: Int, val toIndex: Int) : MainScreenIntent
     data object OnUpdateTodos: MainScreenIntent
     data object OnSelectAllTodos: MainScreenIntent

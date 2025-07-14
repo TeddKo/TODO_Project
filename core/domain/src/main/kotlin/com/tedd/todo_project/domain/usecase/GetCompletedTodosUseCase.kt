@@ -10,11 +10,12 @@ class GetCompletedTodosUseCase @Inject constructor(
     private val todoRepository: TodoRepository
 ) {
     operator fun invoke(): Flow<List<Todo>> {
-        return todoRepository.getTodos()
+        return todoRepository
+            .getTodos()
             .map { todos ->
-                todos.filter { it.isCompleted }
-                    .sortedWith(compareBy { it.completedTime })
-                    .reversed()
+                todos
+                    .filter { it.isCompleted }
+                    .sortedWith(compareByDescending { it.completedTime })
             }
     }
 }
