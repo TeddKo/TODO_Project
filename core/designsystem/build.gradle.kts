@@ -8,6 +8,6 @@ android {
 }
 
 dependencies {
-    api(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.core.splashscreen)
     implementation(libs.material)
 }

@@ -9,4 +9,5 @@ android {
 
 dependencies {
     implementation(project(":feature:histories"))
+    implementation(libs.androidx.core.splashscreen)
 }
