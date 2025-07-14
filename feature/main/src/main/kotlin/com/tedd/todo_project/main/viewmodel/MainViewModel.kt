@@ -49,7 +49,6 @@ class MainViewModel @Inject constructor(
             getTodosUseCase()
                 .onStart { _uiState.update { it.copy(isLoading = true) } }
                 .distinctUntilChanged()
-                .catch { _uiState.update { it.copy(isLoading = false) } }
                 .collectLatest { todos ->
                     val filteredAndSortedTodos = todos
                         .filter { !it.isCompleted }
@@ -164,7 +163,6 @@ class MainViewModel @Inject constructor(
     }
 
     private suspend fun updateTodos() {
-        _uiState.update { it.copy(isLoading = true) }
         val currentTodos = _uiState.value.todos
         if (currentTodos.isNotEmpty()) {
             val size = currentTodos.size
@@ -172,6 +170,9 @@ class MainViewModel @Inject constructor(
                 currentTodos.mapIndexed { index, todo ->
                     todo.copy(position = size - 1 - index)
                 }
+            }
+            if (currentTodos != updateTodos) {
+                _uiState.update { it.copy(isLoading = true) }
             }
             updateTodosUseCase(updateTodos)
             _uiState.update { it.copy(isLoading = false) }
