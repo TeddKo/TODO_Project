@@ -70,6 +70,10 @@ class HistoriesViewModel @Inject constructor(
 
     private suspend fun deleteTodo(todo: Todo) {
         deleteTodoUseCase(todo = todo)
+
+        if (_uiState.value.swipingHistoryId == todo.id) {
+            _uiState.update { it.copy(swipingHistoryId = null) }
+        }
     }
 
     private suspend fun deleteSelectedHistories() {

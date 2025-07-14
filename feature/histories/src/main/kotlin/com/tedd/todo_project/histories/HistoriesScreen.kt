@@ -29,6 +29,7 @@ import com.tedd.todo_project.ui.components.HistoriesTopAppBar
 import com.tedd.todo_project.ui.components.LoadingDialog
 import com.tedd.todo_project.ui.components.SelectionDeleteTopAppBar
 import com.tedd.todo_project.ui.components.SwipeableTodoItem
+import com.tedd.todo_project.ui.extensions.disableSplitMotionEvents
 
 @Composable
 fun HistoriesScreen(
@@ -44,6 +45,7 @@ fun HistoriesScreen(
         modifier = Modifier
             .fillMaxSize()
             .navigationBarsPadding()
+            .disableSplitMotionEvents()
     ) {
 
         if (uiState.isSelectionMode) {
