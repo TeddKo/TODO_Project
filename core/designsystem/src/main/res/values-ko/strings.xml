@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">TODO_Project</string>
+    <string name="todo">TODO</string>
+    <string name="history">기록</string>
+    <string name="empty_todos">TODO 목록이 없습니다.</string>
+    <string name="empty_histories">기록이 없습니다.</string>
+    <string name="input_work">할 일을 입력하세요</string>
+    <string name="registration_date">등록일: %1s</string>
+    <string name="completion_date">완료일: %1s</string>
+    <string name="complete">완료</string>
+    <string name="delete">삭제</string>
+    <string name="selected_item">%1s개 선택됨</string>
+</resources>
