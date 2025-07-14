@@ -154,7 +154,8 @@ fun MainScreen(
                             },
                             onDelete = { onIntent(MainScreenIntent.OnDeleteTodo(todo)) },
                             onClick = { onIntent(MainScreenIntent.OnSelectTodo(todo.id)) },
-                            gestureEnabled = !uiState.isSelectionMode && !isDragging,
+                            clickEnabled = !isDragging && !state.isAnyItemDragging,
+                            gestureEnabled = !uiState.isSelectionMode && !isDragging && !state.isAnyItemDragging,
                             onSwipeStateChange = { isSwiping ->
                                 onIntent(
                                     MainScreenIntent.OnSwipeStateChange(

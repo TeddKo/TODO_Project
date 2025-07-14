@@ -40,6 +40,7 @@ fun SwipeableTodoItem(
     elevation: Dp,
     onToggleComplete: (() -> Unit)? = null,
     onDelete: () -> Unit,
+    clickEnabled: Boolean = true,
     onClick: () -> Unit,
     gestureEnabled: Boolean,
     onSwipeStateChange: (Boolean) -> Unit,
@@ -78,7 +79,7 @@ fun SwipeableTodoItem(
         modifier = modifier
             .shadow(elevation = elevation)
             .clip(shape = RoundedCornerShape(size = cornerRadius))
-            .clickable(onClick = onClick),
+            .clickable(enabled = clickEnabled, onClick = onClick),
         state = dismissState,
         enableDismissFromStartToEnd = onToggleComplete != null,
         gesturesEnabled = gestureEnabled,
