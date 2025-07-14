@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -82,8 +83,10 @@ fun HistoriesScreen(
                         elevation = 0.dp,
                         onDelete = { onIntent(HistoriesScreenIntent.OnDeleteHistory(todo)) },
                         onClick = { onIntent(HistoriesScreenIntent.OnSelectHistory(historyId = todo.id)) },
-                        gestureEnabled = !uiState.isSelectionMode,
-                        onSwipeStateChange = { isSwiping ->
+                        clickEnabled = uiState.swipingHistoryId == null,
+                        gestureEnabled = !uiState.isSelectionMode && (uiState.swipingHistoryId == null || uiState.swipingHistoryId == todo.id),
+                        onDismissStateChanged = { newDismissState ->
+                            val isSwiping = newDismissState != SwipeToDismissBoxValue.Settled
                             onIntent(
                                 HistoriesScreenIntent.OnSwipeStateChange(
                                     historyId = todo.id,

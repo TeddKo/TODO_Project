@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -139,7 +140,7 @@ fun MainScreen(
                         SwipeableTodoItem(
                             modifier = Modifier
                                 .longPressDraggableHandle(
-                                    enabled = !uiState.isSelectionMode,
+                                    enabled = !uiState.isSelectionMode && uiState.swipingTodoId == null,
                                     onDragStopped = { onIntent(MainScreenIntent.OnUpdateTodos) }
                                 ),
                             elevation = elevation,
@@ -154,9 +155,10 @@ fun MainScreen(
                             },
                             onDelete = { onIntent(MainScreenIntent.OnDeleteTodo(todo)) },
                             onClick = { onIntent(MainScreenIntent.OnSelectTodo(todo.id)) },
-                            clickEnabled = !isDragging && !state.isAnyItemDragging,
-                            gestureEnabled = !uiState.isSelectionMode && !isDragging && !state.isAnyItemDragging,
-                            onSwipeStateChange = { isSwiping ->
+                            clickEnabled = !isDragging && !state.isAnyItemDragging && uiState.swipingTodoId == null,
+                            gestureEnabled = !uiState.isSelectionMode && !isDragging && !state.isAnyItemDragging && (uiState.swipingTodoId == null || uiState.swipingTodoId == todo.id),
+                            onDismissStateChanged = { newDismissState ->
+                                val isSwiping = newDismissState != SwipeToDismissBoxValue.Settled
                                 onIntent(
                                     MainScreenIntent.OnSwipeStateChange(
                                         todoId = todo.id,

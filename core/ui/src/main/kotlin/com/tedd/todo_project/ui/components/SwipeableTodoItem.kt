@@ -14,10 +14,7 @@ import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,7 +40,7 @@ fun SwipeableTodoItem(
     clickEnabled: Boolean = true,
     onClick: () -> Unit,
     gestureEnabled: Boolean,
-    onSwipeStateChange: (Boolean) -> Unit,
+    onDismissStateChanged: (SwipeToDismissBoxValue) -> Unit,
     content: @Composable RowScope.() -> Unit
 ) {
     val dismissState = rememberSwipeToDismissBoxState(
@@ -66,14 +63,9 @@ fun SwipeableTodoItem(
         },
         positionalThreshold = { it * .5f }
     )
-
-    val isSwiping by remember {
-        derivedStateOf {
-            dismissState.currentValue != SwipeToDismissBoxValue.Settled || dismissState.targetValue != SwipeToDismissBoxValue.Settled || dismissState.dismissDirection != SwipeToDismissBoxValue.Settled
-        }
+    LaunchedEffect(dismissState.dismissDirection) {
+        onDismissStateChanged(dismissState.dismissDirection)
     }
-
-    SideEffect { onSwipeStateChange(isSwiping) }
 
     SwipeToDismissBox(
         modifier = modifier
@@ -131,7 +123,7 @@ fun PreviewSwipeableTodoItem() {
             onDelete = {},
             onClick = {},
             gestureEnabled = false,
-            onSwipeStateChange = { },
+            onDismissStateChanged = { },
             content = {}
         )
     }
