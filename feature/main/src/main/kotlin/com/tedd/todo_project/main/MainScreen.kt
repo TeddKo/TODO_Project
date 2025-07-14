@@ -43,6 +43,7 @@ import com.tedd.todo_project.ui.components.MainTodoTopAppBar
 import com.tedd.todo_project.ui.components.SelectionDeleteTopAppBar
 import com.tedd.todo_project.ui.components.SwipeableTodoItem
 import com.tedd.todo_project.ui.extensions.addFocusCleaner
+import com.tedd.todo_project.ui.extensions.disableSplitMotionEvents
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
@@ -84,6 +85,7 @@ fun MainScreen(
         modifier = Modifier
             .fillMaxSize()
             .addFocusCleaner(focusManager)
+            .disableSplitMotionEvents()
     ) {
         if (uiState.isSelectionMode) {
             SelectionDeleteTopAppBar(

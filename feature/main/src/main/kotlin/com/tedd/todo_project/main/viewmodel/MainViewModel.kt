@@ -17,7 +17,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.onStart
@@ -65,15 +64,11 @@ class MainViewModel @Inject constructor(
                     _uiState.update { it.copy(todoInput = intent.newInput) }
                 }
 
-                is MainScreenIntent.OnAddTodo -> viewModelScope.launch { addTodo() }
+                is MainScreenIntent.OnAddTodo -> addTodo()
 
-                is MainScreenIntent.OnToggleTodoComplete -> viewModelScope.launch {
-                    toggleTodoComplete(
-                        intent.todo
-                    )
-                }
+                is MainScreenIntent.OnToggleTodoComplete -> toggleTodoComplete(intent.todo)
 
-                is MainScreenIntent.OnDeleteTodo -> viewModelScope.launch { deleteTodo(intent.todo) }
+                is MainScreenIntent.OnDeleteTodo -> deleteTodo(intent.todo)
 
                 is MainScreenIntent.OnNavigate -> navigator.navigate(Route.History)
 
@@ -81,7 +76,7 @@ class MainViewModel @Inject constructor(
 
                 is MainScreenIntent.OnClearSelection -> clearSelection()
 
-                is MainScreenIntent.OnDeleteSelectedTodos -> viewModelScope.launch { deleteSelectedTodos() }
+                is MainScreenIntent.OnDeleteSelectedTodos -> deleteSelectedTodos()
 
                 is MainScreenIntent.OnMoveTodo -> moveTodo(intent.fromIndex, intent.toIndex)
 
@@ -117,10 +112,16 @@ class MainViewModel @Inject constructor(
         val completedTime = if (isCompleted) Clock.System.now()
             .toLocalDateTime(TimeZone.currentSystemDefault()) else null
         updateTodoUseCase(todo.id, isCompleted, completedTime)
+        if (_uiState.value.swipingTodoId == todo.id) {
+            _uiState.update { it.copy(swipingTodoId = null) }
+        }
     }
 
     private suspend fun deleteTodo(todo: Todo) {
         deleteTodoUseCase(todo)
+        if (_uiState.value.swipingTodoId == todo.id) {
+            _uiState.update { it.copy(swipingTodoId = null) }
+        }
     }
 
     private fun selectTodo(todoId: Long) {
