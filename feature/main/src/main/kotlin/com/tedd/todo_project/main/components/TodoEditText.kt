@@ -26,8 +26,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,11 +48,17 @@ fun TodoEditText(
     modifier: Modifier = Modifier
 ) {
     val isButtonEnabled = text.isNotBlank()
+    var isFocused by remember { mutableStateOf(false) }
 
-    val animatedAlpha by animateFloatAsState(
+    val animateButtonAlpha by animateFloatAsState(
         targetValue = if (isButtonEnabled) 1f else 0.3f,
         animationSpec = tween(durationMillis = 300, easing = LinearEasing),
         label = "buttonAlphaAnimation"
+    )
+    val animateBorderAlpha by animateFloatAsState(
+        targetValue = if (isFocused) 1f else 0.3f,
+        animationSpec = tween(durationMillis = 300, easing = LinearEasing),
+        label = "borderColorAnimation"
     )
 
     Row(
@@ -65,10 +73,11 @@ fun TodoEditText(
     ) {
         TextField(
             modifier = Modifier
+                .onFocusChanged { isFocused = it.isFocused }
                 .weight(1f)
                 .border(
                     width = 1.dp,
-                    color = BorderColor.copy(alpha = animatedAlpha),
+                    color = BorderColor.copy(alpha = animateBorderAlpha),
                     shape = RoundedCornerShape(26.dp)
                 ),
             value = text,
@@ -94,13 +103,13 @@ fun TodoEditText(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(
-                        color = SecondaryColor.copy(alpha = animatedAlpha),
+                        color = SecondaryColor.copy(alpha = animateButtonAlpha),
                         shape = CircleShape
                     )
                     .padding(5.dp),
                 imageVector = Icons.Default.Check,
                 contentDescription = "Add Todo",
-                tint = PrimaryColor.copy(alpha = animatedAlpha)
+                tint = PrimaryColor.copy(alpha = animateButtonAlpha)
             )
         }
     }

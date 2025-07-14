@@ -7,9 +7,7 @@ import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.input.pointer.pointerInput
 
 @Composable
-fun Modifier.addFocusCleaner(
-    focusManager: FocusManager
-) = this.pointerInput(Unit) {
+fun Modifier.addFocusCleaner(focusManager: FocusManager) = this.pointerInput(Unit) {
     detectTapGestures(
         onTap = {
             focusManager.clearFocus()

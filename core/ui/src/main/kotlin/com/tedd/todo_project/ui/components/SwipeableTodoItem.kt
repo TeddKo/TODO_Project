@@ -1,14 +1,12 @@
-package com.tedd.todo_project.main.components
+package com.tedd.todo_project.ui.components
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismissBox
@@ -22,41 +20,48 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.tedd.todo_project.core.designsystem.R
 import com.tedd.todo_project.designsystem.theme.BorderColor
 import com.tedd.todo_project.designsystem.theme.TODO_ProjectTheme
-import com.tedd.todo_project.domain.model.Todo
-import kotlinx.datetime.LocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SwipeableTodoItem(
-    modifier: Modifier = Modifier,
-    todo: Todo,
-    backgroundColor: Color,
+    modifier: Modifier = Modifier.Companion,
+    cornerRadius: Dp = 0.dp,
     elevation: Dp,
-    onToggleComplete: (Todo) -> Unit,
-    onDelete: (Todo) -> Unit,
-    isSelected: Boolean,
+    onToggleComplete: (() -> Unit)? = null,
+    onDelete: () -> Unit,
+    onClick: () -> Unit,
     gestureEnabled: Boolean,
-    onSwipeStateChange: (Boolean) -> Unit
+    onSwipeStateChange: (Boolean) -> Unit,
+    content: @Composable RowScope.() -> Unit
 ) {
     val dismissState = rememberSwipeToDismissBoxState(
         confirmValueChange = {
-            if (it == SwipeToDismissBoxValue.StartToEnd) {
-                onToggleComplete(todo.copy(isCompleted = !todo.isCompleted))
-            } else if (it == SwipeToDismissBoxValue.EndToStart) {
-                onDelete(todo)
+            when (it) {
+                SwipeToDismissBoxValue.StartToEnd -> {
+                    if (onToggleComplete != null) {
+                        onToggleComplete()
+                    }
+                    true
+                }
+
+                SwipeToDismissBoxValue.EndToStart -> {
+                    onDelete()
+                    true
+                }
+
+                SwipeToDismissBoxValue.Settled -> false
             }
-            true
         },
         positionalThreshold = { it * .5f }
     )
@@ -70,8 +75,12 @@ fun SwipeableTodoItem(
     SideEffect { onSwipeStateChange(isSwiping) }
 
     SwipeToDismissBox(
-        modifier = Modifier.shadow(elevation = elevation),
+        modifier = modifier
+            .shadow(elevation = elevation)
+            .clip(shape = RoundedCornerShape(size = cornerRadius))
+            .clickable(onClick = onClick),
         state = dismissState,
+        enableDismissFromStartToEnd = onToggleComplete != null,
         gesturesEnabled = gestureEnabled,
         backgroundContent = {
 
@@ -82,12 +91,18 @@ fun SwipeableTodoItem(
             }
 
             val (alignment, text) = when (dismissState.dismissDirection) {
-                SwipeToDismissBoxValue.StartToEnd -> Alignment.CenterStart to stringResource(R.string.complete)
-                SwipeToDismissBoxValue.EndToStart -> Alignment.CenterEnd to stringResource(R.string.delete)
-                SwipeToDismissBoxValue.Settled -> Alignment.CenterStart to ""
+                SwipeToDismissBoxValue.StartToEnd -> Alignment.Companion.CenterStart to stringResource(
+                    R.string.complete
+                )
+
+                SwipeToDismissBoxValue.EndToStart -> Alignment.Companion.CenterEnd to stringResource(
+                    R.string.delete
+                )
+
+                SwipeToDismissBoxValue.Settled -> Alignment.Companion.CenterStart to ""
             }
             Box(
-                modifier = Modifier
+                modifier = Modifier.Companion
                     .fillMaxSize()
                     .background(color)
                     .padding(horizontal = 22.dp),
@@ -95,34 +110,13 @@ fun SwipeableTodoItem(
             ) {
                 Text(
                     text = text,
-                    color = Color.White,
+                    color = Color.Companion.White,
                     style = MaterialTheme.typography.titleMedium,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Companion.Center
                 )
             }
         },
-        content = {
-            val backgroundColor by animateColorAsState(
-                targetValue = if (isSelected) MaterialTheme.colorScheme.secondary
-                else backgroundColor,
-                animationSpec = tween(durationMillis = 300, easing = LinearEasing)
-            )
-
-            Row(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .background(color = backgroundColor)
-                    .padding(horizontal = 22.dp, vertical = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = todo.work,
-                    style = MaterialTheme.typography.bodyLarge,
-                    maxLines = Int.MAX_VALUE,
-                    overflow = TextOverflow.Visible
-                )
-            }
-        }
+        content = content
     )
 }
 
@@ -131,21 +125,13 @@ fun SwipeableTodoItem(
 fun PreviewSwipeableTodoItem() {
     TODO_ProjectTheme {
         SwipeableTodoItem(
-            todo = Todo(
-                id = 1L,
-                work = "This is a sample todo item",
-                isCompleted = false,
-                addedTime = LocalDateTime(2024, 7, 10, 10, 0, 0),
-                completedTime = null,
-                position = 0
-            ),
-            backgroundColor = BorderColor,
             elevation = 0.dp,
             onToggleComplete = {},
             onDelete = {},
-            isSelected = false,
+            onClick = {},
             gestureEnabled = false,
-            onSwipeStateChange = { }
+            onSwipeStateChange = { },
+            content = {}
         )
     }
 }

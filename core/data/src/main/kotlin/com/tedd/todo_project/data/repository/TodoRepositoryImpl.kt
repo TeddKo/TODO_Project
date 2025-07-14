@@ -6,11 +6,11 @@ import com.tedd.todo_project.database.TodoDatabase
 import com.tedd.todo_project.domain.model.Todo
 import com.tedd.todo_project.domain.repository.TodoRepository
 import com.tedd.todo_project.security.CryptoManager
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import kotlinx.datetime.LocalDateTime
 import javax.inject.Inject
 
@@ -27,16 +27,16 @@ class TodoRepositoryImpl @Inject constructor(
                 val decryptedWork = cryptoManager.decrypt(entity.work)
                 entity.toDomain().copy(work = decryptedWork)
             }
-        }
+        }.flowOn(Dispatchers.Default)
     }
 
-    override suspend fun getTodoById(id: Long): Todo? {
-        val todoEntity = todoDao.getTodoById(id) ?: return null
+    override suspend fun getTodoById(id: Long): Todo? = withContext(Dispatchers.Default) {
+        val todoEntity = todoDao.getTodoById(id) ?: return@withContext null
         val decryptedWork = cryptoManager.decrypt(todoEntity.work)
-        return todoEntity.toDomain().copy(work = decryptedWork)
+        todoEntity.toDomain().copy(work = decryptedWork)
     }
 
-    override suspend fun insertTodo(todo: Todo) {
+    override suspend fun insertTodo(todo: Todo) = withContext(Dispatchers.Default) {
         val encryptedWork = cryptoManager.encrypt(todo.work)
         todoDao.insertTodo(todo.copy(work = encryptedWork).toEntity())
     }
@@ -57,7 +57,7 @@ class TodoRepositoryImpl @Inject constructor(
         todoDao.deleteTodos(todos = todos.map { it.toEntity() })
     }
 
-    override suspend fun updateTodos(todos: List<Todo>) {
+    override suspend fun updateTodos(todos: List<Todo>) = withContext(Dispatchers.Default) {
         todoDao.updateTodos(todos.map {
             val encryptedWork = cryptoManager.encrypt(it.work)
             it.copy(work = encryptedWork).toEntity()
