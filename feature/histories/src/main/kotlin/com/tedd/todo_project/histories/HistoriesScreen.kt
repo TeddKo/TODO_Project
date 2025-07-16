@@ -86,7 +86,8 @@ fun HistoriesScreen(
                         onDelete = { onIntent(HistoriesScreenIntent.OnDeleteHistory(todo)) },
                         onClick = { onIntent(HistoriesScreenIntent.OnSelectHistory(historyId = todo.id)) },
                         clickEnabled = uiState.swipingHistoryId == null,
-                        gestureEnabled = !uiState.isSelectionMode && (uiState.swipingHistoryId == null || uiState.swipingHistoryId == todo.id),
+                        isGestured = uiState.swipingHistoryId == null || uiState.swipingHistoryId == todo.id,
+                        isSelected = todo.id in uiState.selectedHistoriesIds && uiState.isSelectionMode,
                         onDismissStateChanged = { newDismissState ->
                             val isSwiping = newDismissState != SwipeToDismissBoxValue.Settled
                             onIntent(
