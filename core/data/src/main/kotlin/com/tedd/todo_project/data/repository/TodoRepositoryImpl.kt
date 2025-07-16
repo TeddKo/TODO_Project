@@ -52,10 +52,11 @@ class TodoRepositoryImpl @Inject constructor(
     override suspend fun updateTodoWork(
         id: Long,
         work: String,
-        updatedTime: LocalDateTime?
+        updatedTime: LocalDateTime?,
+        position: Int
     ) = withContext(Dispatchers.Default) {
         val encryptedWork = cryptoManager.encrypt(work)
-        todoDao.updateTodoWork(id, encryptedWork, updatedTime)
+        todoDao.updateTodoWork(id, encryptedWork, updatedTime, position)
     }
 
     override suspend fun deleteTodo(todo: Todo) {

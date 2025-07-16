@@ -84,6 +84,7 @@ fun MainScreen(
 
     BackHandler(uiState.isSelectionMode) {
         onIntent(MainScreenIntent.OnClearSelection)
+        focusManager.clearFocus()
     }
 
     if (uiState.isLoading) {
@@ -168,8 +169,8 @@ fun MainScreen(
                             },
                             onDelete = { onIntent(MainScreenIntent.OnDeleteTodo(todo)) },
                             onClick = { onIntent(MainScreenIntent.OnSelectTodo(todo.id)) },
-                            clickEnabled = !isDragging && !state.isAnyItemDragging && uiState.swipingTodoId == null,
-                            isGestured = uiState.swipingTodoId == null || uiState.swipingTodoId == todo.id,
+                            clickEnabled = !isDragging && !state.isAnyItemDragging && uiState.swipingTodoId == null && !uiState.isUpdatableWork,
+                            isGestured = !uiState.isSelectionMode && !isDragging && !state.isAnyItemDragging && !uiState.isUpdatableWork && (uiState.swipingTodoId == null || uiState.swipingTodoId == todo.id),
                             isSelected = todo.id in uiState.selectedTodoIds && uiState.isSelectionMode,
                             isDragging = isDragging && state.isAnyItemDragging,
                             onDismissStateChanged = { newDismissState ->
@@ -211,8 +212,8 @@ fun MainScreen(
                 .fillMaxWidth()
                 .focusRequester(focusRequester = focusRequester),
             isUpdatableWork = uiState.isUpdatableWork,
-            text = uiState.todoInput,
-            onTextChange = { onIntent(MainScreenIntent.OnUpdateTodoInput(it)) },
+            value = uiState.todoInput,
+            onValueChange = { onIntent(MainScreenIntent.OnUpdateTodoInput(it)) },
             onAddTodo = {
                 if (uiState.isEditable) {
                     onIntent(MainScreenIntent.OnUpdateTodoWork(it))
@@ -220,7 +221,10 @@ fun MainScreen(
                     onIntent(MainScreenIntent.OnAddTodo)
                 }
             },
-            onCancel = { onIntent(MainScreenIntent.OnEditCancel) }
+            onCancel = {
+                onIntent(MainScreenIntent.OnEditCancel)
+                focusManager.clearFocus()
+            }
         )
     }
 }

@@ -1,5 +1,7 @@
 package com.tedd.todo_project.main.viewmodel
 
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tedd.todo_project.domain.model.Todo
@@ -10,8 +12,8 @@ import com.tedd.todo_project.domain.usecase.InsertTodoUseCase
 import com.tedd.todo_project.domain.usecase.UpdateTodoUseCase
 import com.tedd.todo_project.domain.usecase.UpdateTodoWorkUseCase
 import com.tedd.todo_project.domain.usecase.UpdateTodosUseCase
-import com.tedd.todo_project.route.Route
 import com.tedd.todo_project.navigator.Navigator
+import com.tedd.todo_project.route.Route
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
@@ -105,15 +107,16 @@ class MainViewModel @Inject constructor(
     @OptIn(ExperimentalTime::class)
     private suspend fun addTodo() {
         val currentInput = _uiState.value.todoInput
-        if (currentInput.isNotBlank()) {
+        if (currentInput.text.isNotBlank()) {
+            val newPosition = (_uiState.value.todos.maxOfOrNull { it.position } ?: -1) + 1
             val newTodo = Todo(
-                work = currentInput,
+                work = currentInput.text,
                 isCompleted = false,
                 addedTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-                position = _uiState.value.todos.size
+                position = newPosition
             )
             insertTodoUseCase(newTodo)
-            _uiState.update { it.copy(todoInput = "") }
+            _uiState.update { it.copy(todoInput = TextFieldValue("")) }
         }
     }
 
@@ -156,18 +159,28 @@ class MainViewModel @Inject constructor(
                 _uiState.value.todos.find { it.id == todoId }
             }
 
-        _uiState.update { it.copy(isUpdatableWork = true, todoInput = selectedTodo.work) }
+        _uiState.update {
+            it.copy(
+                isUpdatableWork = true,
+                todoInput = TextFieldValue(
+                    text = selectedTodo.work,
+                    selection = TextRange(selectedTodo.work.length)
+                )
+            )
+        }
     }
 
     @OptIn(ExperimentalTime::class)
     private suspend fun updateTodoWork(newInput: String) {
         val selectedTodoId = _uiState.value.selectedTodoIds.first()
         val updateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+        val newPosition = (_uiState.value.todos.maxOfOrNull { it.position } ?: -1) + 1
 
         updateTodoWorkUseCase(
             id = selectedTodoId,
             work = newInput,
-            updatedTime = updateTime
+            updatedTime = updateTime,
+            position = newPosition
         )
         clearSelection()
     }
@@ -177,7 +190,7 @@ class MainViewModel @Inject constructor(
             it.copy(
                 isSelectionMode = false,
                 selectedTodoIds = emptySet(),
-                todoInput = "",
+                todoInput = TextFieldValue(""),
                 isUpdatableWork = false
             )
         }

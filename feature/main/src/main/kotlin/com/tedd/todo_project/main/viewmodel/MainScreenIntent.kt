@@ -1,11 +1,12 @@
 package com.tedd.todo_project.main.viewmodel
 
 import androidx.compose.runtime.Stable
+import androidx.compose.ui.text.input.TextFieldValue
 import com.tedd.todo_project.domain.model.Todo
 
 @Stable
 sealed interface MainScreenIntent {
-    data class OnUpdateTodoInput(val newInput: String) : MainScreenIntent
+    data class OnUpdateTodoInput(val newInput: TextFieldValue) : MainScreenIntent
     data object OnAddTodo : MainScreenIntent
     data class OnToggleTodoComplete(val todo: Todo) : MainScreenIntent
     data class OnUpdateTodoWork(val newInput: String) : MainScreenIntent
