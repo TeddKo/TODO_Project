@@ -9,7 +9,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.tedd.todo_project.designsystem.theme.BackgroundColor
 import com.tedd.todo_project.main.navigation.mainNavGraph
-import com.tedd.todo_project.navigation.Route
+import com.tedd.todo_project.route.Route
 
 @Composable
 internal fun MainNavHost(

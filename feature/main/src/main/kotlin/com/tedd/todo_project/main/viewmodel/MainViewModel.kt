@@ -8,8 +8,9 @@ import com.tedd.todo_project.domain.usecase.DeleteTodosUseCase
 import com.tedd.todo_project.domain.usecase.GetTodosUseCase
 import com.tedd.todo_project.domain.usecase.InsertTodoUseCase
 import com.tedd.todo_project.domain.usecase.UpdateTodoUseCase
+import com.tedd.todo_project.domain.usecase.UpdateTodoWorkUseCase
 import com.tedd.todo_project.domain.usecase.UpdateTodosUseCase
-import com.tedd.todo_project.navigation.Route
+import com.tedd.todo_project.route.Route
 import com.tedd.todo_project.navigator.Navigator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
@@ -35,6 +36,7 @@ class MainViewModel @Inject constructor(
     private val deleteTodoUseCase: DeleteTodoUseCase,
     private val deleteTodosUseCase: DeleteTodosUseCase,
     private val updateTodoUseCase: UpdateTodoUseCase,
+    private val updateTodoWorkUseCase: UpdateTodoWorkUseCase,
     private val insertTodoUseCase: InsertTodoUseCase,
     private val updateTodosUseCase: UpdateTodosUseCase,
     private val navigator: Navigator
@@ -52,7 +54,12 @@ class MainViewModel @Inject constructor(
                     val filteredAndSortedTodos = todos
                         .filter { !it.isCompleted }
                         .toImmutableList()
-                    _uiState.update { it.copy(todos = filteredAndSortedTodos, isLoading = false) }
+                    _uiState.update {
+                        it.copy(
+                            todos = filteredAndSortedTodos,
+                            isLoading = false
+                        )
+                    }
                 }
         }
     }
@@ -68,11 +75,17 @@ class MainViewModel @Inject constructor(
 
                 is MainScreenIntent.OnToggleTodoComplete -> toggleTodoComplete(intent.todo)
 
+                is MainScreenIntent.OnUpdateTodoWork -> updateTodoWork(newInput = intent.newInput)
+
                 is MainScreenIntent.OnDeleteTodo -> deleteTodo(intent.todo)
 
                 is MainScreenIntent.OnNavigate -> navigator.navigate(Route.History)
 
                 is MainScreenIntent.OnSelectTodo -> selectTodo(intent.todoId)
+
+                is MainScreenIntent.OnEditTodo -> editTodo()
+
+                is MainScreenIntent.OnEditCancel -> clearSelection()
 
                 is MainScreenIntent.OnClearSelection -> clearSelection()
 
@@ -80,12 +93,11 @@ class MainViewModel @Inject constructor(
 
                 is MainScreenIntent.OnMoveTodo -> moveTodo(intent.fromIndex, intent.toIndex)
 
-                is MainScreenIntent.OnUpdateTodos -> updateTodos()
+                is MainScreenIntent.OnUpdateTodoIndex -> updateTodoIndex()
 
                 is MainScreenIntent.OnSelectAllTodos -> selectAllTodos()
 
                 is MainScreenIntent.OnSwipeStateChange -> _uiState.update { it.copy(swipingTodoId = if (intent.isSwiping) intent.todoId else null) }
-
             }
         }
     }
@@ -98,7 +110,6 @@ class MainViewModel @Inject constructor(
                 work = currentInput,
                 isCompleted = false,
                 addedTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-                completedTime = null,
                 position = _uiState.value.todos.size
             )
             insertTodoUseCase(newTodo)
@@ -138,14 +149,47 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    private fun editTodo() {
+        val selectedTodo = _uiState
+            .value
+            .selectedTodoIds.firstNotNullOf { todoId ->
+                _uiState.value.todos.find { it.id == todoId }
+            }
+
+        _uiState.update { it.copy(isUpdatableWork = true, todoInput = selectedTodo.work) }
+    }
+
+    @OptIn(ExperimentalTime::class)
+    private suspend fun updateTodoWork(newInput: String) {
+        val selectedTodoId = _uiState.value.selectedTodoIds.first()
+        val updateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+
+        updateTodoWorkUseCase(
+            id = selectedTodoId,
+            work = newInput,
+            updatedTime = updateTime
+        )
+        clearSelection()
+    }
+
     private fun clearSelection() {
-        _uiState.update { it.copy(isSelectionMode = false, selectedTodoIds = emptySet()) }
+        _uiState.update {
+            it.copy(
+                isSelectionMode = false,
+                selectedTodoIds = emptySet(),
+                todoInput = "",
+                isUpdatableWork = false
+            )
+        }
     }
 
     private suspend fun deleteSelectedTodos() {
-        val todosToDelete = _uiState.value.selectedTodoIds.mapNotNull { todoId ->
-            _uiState.value.todos.find { it.id == todoId }
-        }
+        val todosToDelete = _uiState
+            .value
+            .selectedTodoIds
+            .mapNotNull { todoId ->
+                _uiState.value.todos.find { it.id == todoId }
+            }
 
         if (todosToDelete.isNotEmpty()) {
             deleteTodosUseCase(todosToDelete)
@@ -163,7 +207,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private suspend fun updateTodos() {
+    private suspend fun updateTodoIndex() {
         val currentTodos = _uiState.value.todos
         if (currentTodos.isNotEmpty()) {
             val size = currentTodos.size

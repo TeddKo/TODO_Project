@@ -9,7 +9,7 @@ import com.tedd.todo_project.histories.HistoriesScreen
 import com.tedd.todo_project.histories.viewmodel.HistoriesViewModel
 import com.tedd.todo_project.main.MainScreen
 import com.tedd.todo_project.main.viewmodel.MainViewModel
-import com.tedd.todo_project.navigation.Route
+import com.tedd.todo_project.route.Route
 
 fun NavGraphBuilder.mainNavGraph() {
 

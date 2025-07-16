@@ -12,5 +12,11 @@ data class MainScreenState(
     val isSelectionMode: Boolean = false,
     val selectedTodoIds: Set<Long> = emptySet(),
     val isLoading: Boolean = false,
-    val swipingTodoId: Long? = null
-)
+    val swipingTodoId: Long? = null,
+    val isUpdatableWork: Boolean = false
+) {
+    val isEditable: Boolean
+        get() = isSelectionMode && selectedTodoIds.size == 1
+
+    val isSelectionTobBarVisible: Boolean get() = isSelectionMode && !isUpdatableWork
+}
