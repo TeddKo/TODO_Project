@@ -2,6 +2,6 @@ package com.tedd.todo_project.navigator
 
 import kotlinx.coroutines.channels.Channel
 
-interface ChannelNavigator {
-    val channel: Channel<IntentRoute>
+interface NavigationChannelProvider {
+    val channel: Channel<NavigationIntent>
 }

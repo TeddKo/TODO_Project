@@ -6,7 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.rememberNavController
-import com.tedd.todo_project.LaunchedRouter
+import com.tedd.todo_project.composable.LaunchedNavigator
 import com.tedd.todo_project.designsystem.theme.TODO_ProjectTheme
 import com.tedd.todo_project.main.navhost.MainNavHost
 import dagger.hilt.android.AndroidEntryPoint
@@ -20,7 +20,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             val navController = rememberNavController()
 
-            LaunchedRouter(navHostController = navController)
+            LaunchedNavigator(
+                navHostController = navController,
+                finish = ::finish
+            )
 
             TODO_ProjectTheme {
                 MainNavHost(navController = navController)
