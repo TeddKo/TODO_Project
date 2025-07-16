@@ -10,12 +10,14 @@ class UpdateTodoWorkUseCase @Inject constructor(
     suspend operator fun invoke(
         id: Long,
         work: String,
-        updatedTime: LocalDateTime? = null
+        updatedTime: LocalDateTime? = null,
+        position: Int
     ) {
         todoRepository.updateTodoWork(
             id = id,
             work = work,
-            updatedTime = updatedTime
+            updatedTime = updatedTime,
+            position = position
         )
     }
 }

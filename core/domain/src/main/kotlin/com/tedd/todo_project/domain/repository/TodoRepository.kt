@@ -14,7 +14,7 @@ interface TodoRepository {
 
     suspend fun updateTodoCompletion(id: Long, isCompleted: Boolean, completedTime: LocalDateTime?)
 
-    suspend fun updateTodoWork(id: Long, work: String, updatedTime: LocalDateTime?)
+    suspend fun updateTodoWork(id: Long, work: String, updatedTime: LocalDateTime?, position: Int)
 
     suspend fun deleteTodo(todo: Todo)
 
