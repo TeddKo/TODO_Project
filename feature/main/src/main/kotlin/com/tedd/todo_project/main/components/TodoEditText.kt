@@ -27,7 +27,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,7 +36,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -51,14 +49,13 @@ import com.tedd.todo_project.designsystem.theme.TODO_ProjectTheme
 fun TodoEditText(
     modifier: Modifier = Modifier,
     isUpdatableWork: Boolean,
-    text: String,
-    onTextChange: (String) -> Unit,
+    value: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit,
     onAddTodo: (String) -> Unit,
     onCancel: () -> Unit
 ) {
-    val isButtonEnabled = text.isNotBlank()
+    val isButtonEnabled = value.text.isNotBlank()
     var isFocused by remember { mutableStateOf(false) }
-    var textFieldValue by remember { mutableStateOf(TextFieldValue(text)) }
 
     val animateButtonAlpha by animateFloatAsState(
         targetValue = if (isButtonEnabled) 1f else 0.3f,
@@ -70,17 +67,6 @@ fun TodoEditText(
         animationSpec = tween(durationMillis = 300, easing = LinearEasing),
         label = "borderColorAnimation"
     )
-
-    LaunchedEffect(isUpdatableWork) {
-        textFieldValue = if (isUpdatableWork) {
-            TextFieldValue(
-                text = text,
-                selection = TextRange(text.length)
-            )
-        } else {
-            TextFieldValue(text = "")
-        }
-    }
 
     Column(
         modifier = modifier
@@ -123,11 +109,8 @@ fun TodoEditText(
                         color = BorderColor.copy(alpha = animateBorderAlpha),
                         shape = RoundedCornerShape(26.dp)
                     ),
-                value = textFieldValue,
-                onValueChange = {
-                    textFieldValue = it
-                    onTextChange(it.text)
-                },
+                value = value,
+                onValueChange = onValueChange,
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
@@ -142,7 +125,7 @@ fun TodoEditText(
             )
 
             IconButton(
-                onClick = { onAddTodo(text) },
+                onClick = { onAddTodo(value.text) },
                 enabled = isButtonEnabled
             ) {
                 Icon(
@@ -168,8 +151,8 @@ fun PreviewTodoEditText() {
     TODO_ProjectTheme {
         TodoEditText(
             isUpdatableWork = true,
-            text = "Sample Todo",
-            onTextChange = {},
+            value = TextFieldValue("Sample Todo"),
+            onValueChange = {},
             onAddTodo = {},
             onCancel = {}
         )
@@ -179,12 +162,12 @@ fun PreviewTodoEditText() {
 @Preview(showBackground = true)
 @Composable
 fun PreviewTodoEditTextEmpty() {
-    val (string, onTextChange) = remember { mutableStateOf("") }
+    val (textFieldValue, onTextChange) = remember { mutableStateOf(TextFieldValue("")) }
     TODO_ProjectTheme {
         TodoEditText(
             isUpdatableWork = false,
-            text = string,
-            onTextChange = onTextChange,
+            value = textFieldValue,
+            onValueChange = onTextChange,
             onAddTodo = {},
             onCancel = {}
         )
