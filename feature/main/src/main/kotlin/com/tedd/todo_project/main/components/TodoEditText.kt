@@ -71,11 +71,15 @@ fun TodoEditText(
         label = "borderColorAnimation"
     )
 
-    LaunchedEffect(text) {
-        textFieldValue = TextFieldValue(
-            text = text,
-            selection = TextRange(text.length)
-        )
+    LaunchedEffect(isUpdatableWork) {
+        textFieldValue = if (isUpdatableWork) {
+            TextFieldValue(
+                text = text,
+                selection = TextRange(text.length)
+            )
+        } else {
+            TextFieldValue(text = "")
+        }
     }
 
     Column(
