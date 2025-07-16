@@ -4,18 +4,18 @@ import com.tedd.todo_project.domain.repository.TodoRepository
 import kotlinx.datetime.LocalDateTime
 import javax.inject.Inject
 
-class UpdateTodoUseCase @Inject constructor(
+class UpdateTodoWorkUseCase @Inject constructor(
     private val todoRepository: TodoRepository
 ) {
     suspend operator fun invoke(
         id: Long,
-        isCompleted: Boolean,
-        completedTime: LocalDateTime? = null,
+        work: String,
+        updatedTime: LocalDateTime? = null
     ) {
-        todoRepository.updateTodoCompletion(
+        todoRepository.updateTodoWork(
             id = id,
-            isCompleted = isCompleted,
-            completedTime = completedTime
+            work = work,
+            updatedTime = updatedTime
         )
     }
 }

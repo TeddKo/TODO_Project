@@ -12,7 +12,9 @@ interface TodoRepository {
 
     suspend fun insertTodo(todo: Todo)
 
-    suspend fun updateTodo(id: Long, isCompleted: Boolean, completedTime: LocalDateTime?)
+    suspend fun updateTodoCompletion(id: Long, isCompleted: Boolean, completedTime: LocalDateTime?)
+
+    suspend fun updateTodoWork(id: Long, work: String, updatedTime: LocalDateTime?)
 
     suspend fun deleteTodo(todo: Todo)
 

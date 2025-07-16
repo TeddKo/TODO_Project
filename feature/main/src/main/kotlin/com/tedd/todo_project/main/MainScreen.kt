@@ -29,6 +29,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -54,6 +56,7 @@ fun MainScreen(
     onIntent: (MainScreenIntent) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
+    val focusRequester = remember { FocusRequester() }
 
     val lazyListState = rememberLazyListState()
     val state =
@@ -73,6 +76,12 @@ fun MainScreen(
         previousTodosSize = uiState.todos.size
     }
 
+    LaunchedEffect(uiState.isUpdatableWork) {
+        if (uiState.isUpdatableWork) {
+            focusRequester.requestFocus()
+        }
+    }
+
     BackHandler(uiState.isSelectionMode) {
         onIntent(MainScreenIntent.OnClearSelection)
     }
@@ -87,10 +96,12 @@ fun MainScreen(
             .addFocusCleaner(focusManager)
             .disableSplitMotionEvents()
     ) {
-        if (uiState.isSelectionMode) {
+        if (uiState.isSelectionTobBarVisible) {
             SelectionDeleteTopAppBar(
                 title = stringResource(R.string.selected_item, uiState.selectedTodoIds.size),
                 isAllSelected = uiState.todos.isNotEmpty() && uiState.selectedTodoIds.size == uiState.todos.size,
+                isEditable = uiState.isEditable,
+                onSelectedEdit = { onIntent(MainScreenIntent.OnEditTodo) },
                 onClearSelection = { onIntent(MainScreenIntent.OnClearSelection) },
                 onSelectAll = { onIntent(MainScreenIntent.OnSelectAllTodos) },
                 onDeleteSelected = { onIntent(MainScreenIntent.OnDeleteSelectedTodos) }
@@ -143,7 +154,7 @@ fun MainScreen(
                             modifier = Modifier
                                 .longPressDraggableHandle(
                                     enabled = !uiState.isSelectionMode && uiState.swipingTodoId == null,
-                                    onDragStopped = { onIntent(MainScreenIntent.OnUpdateTodos) }
+                                    onDragStopped = { onIntent(MainScreenIntent.OnUpdateTodoIndex) }
                                 ),
                             elevation = elevation,
                             onToggleComplete = {
@@ -196,10 +207,20 @@ fun MainScreen(
         }
 
         TodoEditText(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .focusRequester(focusRequester = focusRequester),
+            isUpdatableWork = uiState.isUpdatableWork,
             text = uiState.todoInput,
             onTextChange = { onIntent(MainScreenIntent.OnUpdateTodoInput(it)) },
-            onAddTodo = { onIntent(MainScreenIntent.OnAddTodo) }
+            onAddTodo = {
+                if (uiState.isEditable) {
+                    onIntent(MainScreenIntent.OnUpdateTodoWork(it))
+                } else {
+                    onIntent(MainScreenIntent.OnAddTodo)
+                }
+            },
+            onCancel = { onIntent(MainScreenIntent.OnEditCancel) }
         )
     }
 }

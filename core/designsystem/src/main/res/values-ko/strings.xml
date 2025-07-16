@@ -10,4 +10,5 @@
     <string name="complete">완료</string>
     <string name="delete">삭제</string>
     <string name="selected_item">%1s개 선택됨</string>
+    <string name="selected_edit">수정중…</string>
 </resources>

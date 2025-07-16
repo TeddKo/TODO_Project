@@ -1,5 +1,6 @@
 package com.tedd.todo_project.ui.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.LibraryAddCheck
 import androidx.compose.material.icons.outlined.LibraryAddCheck
@@ -63,6 +65,8 @@ fun TodoTopAppBar(
 fun SelectionDeleteTopAppBar(
     title: String,
     isAllSelected: Boolean,
+    isEditable: Boolean = false,
+    onSelectedEdit: () -> Unit = {},
     onClearSelection: () -> Unit,
     onSelectAll: () -> Unit,
     onDeleteSelected: () -> Unit
@@ -82,8 +86,15 @@ fun SelectionDeleteTopAppBar(
             }
         },
         actions = {
-            IconButton(onClick = onDeleteSelected) {
-                Icon(Icons.Default.Delete, contentDescription = "Delete selected")
+            Row {
+                AnimatedVisibility(isEditable) {
+                    IconButton(onClick = onSelectedEdit) {
+                        Icon(Icons.Default.Edit, contentDescription = "Edit selected")
+                    }
+                }
+                IconButton(onClick = onDeleteSelected) {
+                    Icon(Icons.Default.Delete, contentDescription = "Delete selected")
+                }
             }
         }
     )

@@ -10,7 +10,7 @@ import kotlinx.datetime.LocalDateTime
 
 @Dao
 interface TodoDao {
-    @Query("SELECT * FROM todos ORDER BY position DESC, id DESC")
+    @Query("SELECT * FROM todos ORDER BY COALESCE(updatedTime, addedTime) DESC, id DESC")
     fun getAllTodos(): Flow<List<TodoEntity>>
 
     @Insert
@@ -33,4 +33,7 @@ interface TodoDao {
 
     @Query("UPDATE todos SET isCompleted = :isCompleted, completedTime = :completedTime WHERE id = :id")
     suspend fun updateTodoCompletion(id: Long, isCompleted: Boolean, completedTime: LocalDateTime?)
+
+    @Query("UPDATE todos SET work = :work, updatedTime = :updatedTime WHERE id = :id")
+    suspend fun updateTodoWork(id: Long, work: String, updatedTime: LocalDateTime?)
 }
