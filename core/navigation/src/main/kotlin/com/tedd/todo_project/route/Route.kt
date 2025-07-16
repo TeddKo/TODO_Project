@@ -1,4 +1,4 @@
-package com.tedd.todo_project.navigation
+package com.tedd.todo_project.route
 
 import kotlinx.serialization.Serializable
 

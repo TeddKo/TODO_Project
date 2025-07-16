@@ -1,6 +1,6 @@
 package com.tedd.todo_project.navigator
 
-import com.tedd.todo_project.navigation.Route
+import com.tedd.todo_project.route.Route
 
 interface Navigator {
     suspend fun navigate(
