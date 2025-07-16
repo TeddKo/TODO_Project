@@ -11,6 +11,7 @@ data class TodoEntity(
     val work: String,
     val isCompleted: Boolean,
     val addedTime: LocalDateTime,
-    val completedTime: LocalDateTime?,
+    val completedTime: LocalDateTime? = null,
+    val updatedTime: LocalDateTime? = null,
     val position: Int = 0
 )

@@ -41,12 +41,21 @@ class TodoRepositoryImpl @Inject constructor(
         todoDao.insertTodo(todo.copy(work = encryptedWork).toEntity())
     }
 
-    override suspend fun updateTodo(
+    override suspend fun updateTodoCompletion(
         id: Long,
         isCompleted: Boolean,
         completedTime: LocalDateTime?
     ) {
         todoDao.updateTodoCompletion(id, isCompleted, completedTime)
+    }
+
+    override suspend fun updateTodoWork(
+        id: Long,
+        work: String,
+        updatedTime: LocalDateTime?
+    ) = withContext(Dispatchers.Default) {
+        val encryptedWork = cryptoManager.encrypt(work)
+        todoDao.updateTodoWork(id, encryptedWork, updatedTime)
     }
 
     override suspend fun deleteTodo(todo: Todo) {
