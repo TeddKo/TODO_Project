@@ -1,14 +1,12 @@
 package com.tedd.todo_project.navigator
 
-import com.tedd.todo_project.navigation.Route
+import com.tedd.todo_project.route.Route
 
-sealed interface IntentRoute {
-
+sealed interface NavigationIntent {
     data class Navigate(
         val route: Route,
         val saveState: Boolean,
         val launchSingleTop: Boolean,
-    ): IntentRoute
-
-    data object NavigateBack: IntentRoute
+    ) : NavigationIntent
+    data object NavigateBack : NavigationIntent
 }

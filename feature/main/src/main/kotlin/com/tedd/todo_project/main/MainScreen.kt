@@ -169,7 +169,9 @@ fun MainScreen(
                             onDelete = { onIntent(MainScreenIntent.OnDeleteTodo(todo)) },
                             onClick = { onIntent(MainScreenIntent.OnSelectTodo(todo.id)) },
                             clickEnabled = !isDragging && !state.isAnyItemDragging && uiState.swipingTodoId == null,
-                            gestureEnabled = !uiState.isSelectionMode && !isDragging && !state.isAnyItemDragging && (uiState.swipingTodoId == null || uiState.swipingTodoId == todo.id),
+                            isGestured = uiState.swipingTodoId == null || uiState.swipingTodoId == todo.id,
+                            isSelected = todo.id in uiState.selectedTodoIds && uiState.isSelectionMode,
+                            isDragging = isDragging && state.isAnyItemDragging,
                             onDismissStateChanged = { newDismissState ->
                                 val isSwiping = newDismissState != SwipeToDismissBoxValue.Settled
                                 onIntent(

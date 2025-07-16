@@ -18,6 +18,7 @@ sealed interface MainScreenIntent {
     data object OnEditTodo : MainScreenIntent
     data object OnEditCancel : MainScreenIntent
     data object OnUpdateTodoIndex : MainScreenIntent
+    data object OnUpdateTodos : MainScreenIntent
     data object OnSelectAllTodos : MainScreenIntent
     data class OnSwipeStateChange(val todoId: Long, val isSwiping: Boolean) : MainScreenIntent
 }

@@ -10,7 +10,7 @@ import com.tedd.todo_project.domain.usecase.InsertTodoUseCase
 import com.tedd.todo_project.domain.usecase.UpdateTodoUseCase
 import com.tedd.todo_project.domain.usecase.UpdateTodoWorkUseCase
 import com.tedd.todo_project.domain.usecase.UpdateTodosUseCase
-import com.tedd.todo_project.navigation.Route
+import com.tedd.todo_project.route.Route
 import com.tedd.todo_project.navigator.Navigator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
